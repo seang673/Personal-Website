@@ -6,8 +6,8 @@
 - Contacts
 
 ## Current Status
-- The website is currently static 
-- More updates are soon to follow!
+- This is currently a static html/css website 
+- Key updates are soon to follow!
 
 ## Where to Access Site
 Live Site: https://seang673.github.io/Personal-Website/
