@@ -6,7 +6,7 @@
   - Contacts
 
 ## Current Status
-- This is currently a static html/css website 
+- This is currently a static HTML/CSS website 
 - Key updates are soon to follow!
 
 ## Where to Access Site
