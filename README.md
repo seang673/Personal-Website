@@ -1,6 +1,6 @@
 # Personal-Website
-**This is a personal/professional website about me.** It is created through HTML and CSS programming, and currently displays the following components:
-  - A description
+**This is a personal/professional website about me.** It is created with HTML and CSS programming, and currently displays the following components:
+  - A personal description
   - A project portfolio
   - My resume
   - Contacts
