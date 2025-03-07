@@ -1,10 +1,13 @@
 # Personal-Website
-This is a personal/professional website about me, currently displaying:
+<u>This is a personal/professional website about me.</ul> It is created through HTML and CSS programming, and currently displays the following components:
 - A description
 - A project portfolio
 - My resume
 - Contacts
 
-  The website is currently static, but more updates are soon to follow!
+## Current Status
+-The website is currently static 
+-More updates are soon to follow!
 
-  Live Site: https://seang673.github.io/Personal-Website/
+## Where to Access Site
+Live Site: https://seang673.github.io/Personal-Website/
