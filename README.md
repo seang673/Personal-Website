@@ -10,4 +10,4 @@
 - Key updates are soon to follow!
 
 ## Where to Access Site
-Live Site: https://seang673.github.io/Personal-Website/
+Live Site:  https://personal-website-de16c.web.app
