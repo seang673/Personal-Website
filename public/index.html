@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sean Griffiths Website</title>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@2.3.8/dist/purify.min.js"></script>
+    <script type="module" src="/main.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -18,15 +19,48 @@
         </ul>
     </nav>
 
+    <div class="authentication">
+        <div class="signup-container">
+            <h1>Register</h1>
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="email">Email: </label>
+                    <input type="email" id="email" placeholder="Enter Email" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" placeholder="Enter Password" required/>
+                </div>
+                <button type="submit">Register</button>
+            </form>
+        </div>
+        <div class="login-container">
+            <h1>Log-In</h1>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email: </label>
+                    <input type="email" id="email" placeholder="Enter Email" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" placeholder="Enter Password" required/>
+                </div>
+                <button type="submit">Register</button>
+            </form>
+        </div>
+    </div>
+
     <div class="about-me" id="home">
         <h1>About Me</h1>
-        <p>My name is Sean Griffiths. I am a 21 year old Computer Science student at Georgia State University.</p>
+        <p>My name is Sean Griffiths. I am a 22 year old Computer Science student at Georgia State University.</p>
         <p>I have a passion for Data Analytics and Software Development. I am seeking employment in this department.</p>
         <p>Reach out to me if you are interested in collaborating or just having a chat!!</p>
     </div>
 
     <div class="portfolio" id="portfolio">
-        <h1>My Portfolio</h1>
+        <h1>My Project Portfolio</h1>
 
         <div class="project">
             <h2>Little Lemon Restaraunt App</h2>
@@ -72,14 +106,14 @@
     <div class="thanks-section">
         <h3>Thank you for stopping by and checking out my website!</h3>
         <pre>
-            ******************
-            **                  **
-            **     O        O      **
-            **          ^            **
-            **   \            /    **
-            **   \__________/    **
-            **                 **
-            ****************
+        ******************
+        **                  **
+        **     O        O      **
+        **          ^            **
+        **   \            /    **
+        **   \__________/    **
+        *                 **
+        ****************
 
 
         </pre>

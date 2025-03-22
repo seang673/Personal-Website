@@ -1,7 +1,7 @@
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    background-color: rgb(41, 98, 139);
+    background-color:#62C1E8;
 }
 
 nav {
@@ -39,6 +39,37 @@ nav a {
 nav a:hover {
     background-color: #555;
 }
+
+.authentication{
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.signup-container, .login-container{
+    width:400px;
+    padding: 10px;
+    background-color:aqua;
+    border-radius:10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align:center;
+}
+
+form{
+    display:flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group{
+    display: flex;
+    flex-direction: column;
+}
+
+
 
 .about-me {
     max-width: 900px;
@@ -156,8 +187,7 @@ nav a:hover {
 .thanks-section{
     margin: 40px auto;
     padding: 20px;
-    max-width: 800px;
-    background-color: rgb(118, 136, 156);
+    background-color: rgb(28, 156, 175);
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     text-align: center;
