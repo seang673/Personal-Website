@@ -1,5 +1,6 @@
 import {registerUser, signInUser} from "./auth.js";
 
+//Handle signup
 const signupForm = document.getByElementId("signupForm");
 signupForm.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -15,10 +16,10 @@ signupForm.addEventListener("submit", async (event) => {
     }
 });
 
+//Handle login
 const loginForm = document.getByElementId("loginForm");
 loginForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
