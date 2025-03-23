@@ -21,14 +21,14 @@
     <div class="authentication">
         <div class="signup-container">
             <h2>Register</h2>
-            <form id="signupForm">
+            <form id="signupForm" action="#">
                 <div class="form-group">
-                    <label for="email">Email: </label>
+                    <label for="signupEmail">Email: </label>
                     <input type="email" id="signupEmail" placeholder="Enter Email" required />
                 </div>
 
                 <div class="form-group">
-                    <label for="password">Password:</label>
+                    <label for="signupPassword">Password:</label>
                     <input type="password" id="signupPassword" placeholder="Enter Password" required/>
                 </div>
                 <button type="submit">Register</button>
@@ -36,21 +36,20 @@
         </div>
         <div class="login-container">
             <h2>Log-In</h2>
-            <form id="loginForm">
+            <form id="loginForm" action="#">
                 <div class="form-group">
-                    <label for="email">Email: </label>
+                    <label for="loginEmail">Email: </label>
                     <input type="email" id="loginEmail" placeholder="Enter Email" required />
                 </div>
 
                 <div class="form-group">
-                    <label for="password">Password:</label>
+                    <label for="loginPassword">Password:</label>
                     <input type="password" id="loginPassword" placeholder="Enter Password" required/>
                 </div>
                 <button type="submit">Log In</button>
             </form>
         </div>
     </div>
-    <script type="module" src="/main.js"></script>
 
     <div class="about-me" id="home">
         <h1>About Me</h1>
@@ -118,7 +117,7 @@
 
         </pre>
     </div>
-
+    <script src="/authEvents.js" type="module"></script>
 </body>
 
 
