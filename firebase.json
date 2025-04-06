@@ -8,9 +8,21 @@
     ],
     "rewrites": [
       {
-        "source": "**",
+        "source": "/index.html",
         "destination": "/index.html"
       }
+    ],
+    "headers": [
+      {
+        "source": "/scripts/*.js",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "application/javascript"
+          }
+        ]
+      }
     ]
-  }
+  
+}
 }
