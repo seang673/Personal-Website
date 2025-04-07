@@ -52,7 +52,7 @@ nav a:hover {
 .signup-container, .login-container{
     width:400px;
     padding: 10px;
-    background-color:aqua;
+    background-color:rgb(144, 212, 212);
     border-radius:10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     text-align:center;
@@ -204,4 +204,23 @@ form{
     font-family: monospace;
     color:white;
 }
+.center-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding:5px;
+}
+
+#logoutButton{
+    display:none;
+    text-align: center;
+    background-color:#555;
+    color:white;
+    padding: 10px 15px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+
+}
+
 

@@ -2,12 +2,12 @@
 **This is a personal/professional website about me.** It is created with HTML and CSS programming, and currently displays the following components:
   - A personal description
   - A project portfolio
-  - My resume
+  - My up-to-date resume
   - Contacts
 
 ## Current Status
-- This is currently a static HTML/CSS website 
-- Key updates are soon to follow!
+- This is a website that is hosted using Firebase hosting
+- A user feedback functionality is soon to follow!
 
 ## Where to Access Site
 Live Site:  https://personal-website-de16c.web.app
