@@ -7,9 +7,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const authSection = document.getElementById("authSection");
     const logoutButton = document.getElementById("logoutButton");
     const centerContainer = document.querySelector(".center-container");
+    const feedbackSection = document.getElementById("feedbackSection");
 
-    if (!authSection || !logoutButton){
-      console.error("Error: Could not find the authentication section or logoutButton in the DOM");
+    if (!authSection || !logoutButton || !feedbackSection){
+      console.error("Error: Could not find the authentication section or logoutButton or feedback section in the DOM");
       return;
     }
 
@@ -43,7 +44,8 @@ document.addEventListener("DOMContentLoaded", () => {
           //Hide authentication and show logout button
           authSection.style.display = "none";
           logoutButton.style.display = "block";
-          centerContainer.style.justifyContent = "center"; //Keeps logout button centered
+          feedbackSection.style.display= "block";
+          centerContainer.style.justifyContent = "center"; //Keeps logout button and feedback section centered
         } catch (error) {
           console.error("Login error:", error.message);
           alert("Error: " + error.message);
@@ -58,7 +60,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             //displays register and login forms again
             authSection.style.display = originalAuthDisplay;
-            logoutButton.style.display = "none";
+            logoutButton.style.display="none";
+            feedbackSection.style.display = "none";
             centerContainer.style.justifyContent = originalContainerJustify;
         } catch(error){
           console.error("Logout error:", error.message);

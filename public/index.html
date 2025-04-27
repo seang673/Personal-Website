@@ -52,7 +52,15 @@
                 </form>
             </div>
         </div>
-        <button id="logoutButton" style="display: none;">Log Out</button>
+
+        <div id="feedbackSection" style="display: none;">
+            <button id="logoutButton">Log Out</button>
+            <h3>Feedback Section</h3>
+            <textarea id="feedbackInput" placholder="Enter your feedback" rows="4"></textarea>
+            <button id="submitFeedback">Submit</button>
+            <h3>Feedbacks:</h3>
+            <ul id="feedbackContainer"></ul>
+        </div>
     </div>
     <div class="about-me" id="home">
         <h1>About Me</h1>
@@ -125,6 +133,9 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
         import {getAuth, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        import {getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+
         // TODO: Add SDKs for Firebase products that you want to use
         // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -141,17 +152,20 @@
         };
 
         // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const auth = getAuth(app);
+        window.app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(window.app);
+        const auth = getAuth(window.app);
+        const db = getFirestore(window.app);
+        const feedbackCollection = collection(db, "feedbacks");
 
         window.auth = auth;
         window.signOut = signOut;
         window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
         window.signInWithEmailAndPassword = signInWithEmailAndPassword;
       </script>
-      <script type = "module" src="./scripts/authFunctions.js"></script>
+      <script type ="module" src="./scripts/authFunctions.js"></script>
       <script type="module" src="./scripts/authEvents.js"></script>
+      <script type="module" src="./scripts/feedbackFunctions.js"></script>
 </body>
 
 
