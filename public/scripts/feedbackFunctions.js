@@ -8,10 +8,15 @@ const feedbackCollection = collection(db, "feedbacks");
 onAuthStateChanged(auth, (user) => {
     if (user) {
         document.getElementById("feedbackSection").style.display = "block"; // Show feedback section
-
+        const submitButton = document.getElementById("submitFeedback");
         //  Handle Feedback Submission
-        document.getElementById("submitFeedback").addEventListener("click", async () => {
+        submitButton.addEventListener("click", async () => {
             const feedbackInput = document.getElementById("feedbackInput").value;
+            submitButton.disabled = true; //Prevent multiple clicks
+
+            setTimeout(() => {
+                submitButton.disabled = false;  //Re-enable after delay
+            }, 1000);
 
             if (!feedbackInput.trim()) {
                 alert("Please enter feedback.");
@@ -47,22 +52,25 @@ onAuthStateChanged(auth, (user) => {
         onSnapshot(feedbackQuery, (snapshot) => {
             feedbackContainer.innerHTML = ""; // Clear old feedback
 
-            snapshot.forEach((doc) => {
-                console.log("Fetched feedback:", snapshot.docs.map(doc => doc.data()));  //Debugging
-                const data = doc.data();
-                const feedbackItem = document.createElement("li");
-                const time = data.timestamp?.seconds 
-                ? new Date(data.timestamp.seconds * 1000).toLocaleString()
-                : "Pending timestamp";
-                feedbackItem.innerHTML = `<pre>                                       <button class="deleteFeedback" style="background-color: red;
+            snapshot.docs.forEach((doc) => {
+                if(!document.getElementById(doc.id)) {   //Prevents duplicates
+                    const data = doc.data();
+                    const feedbackItem = document.createElement("li");
+                    feedbackItem.id = doc.id;
+                    const time = data.timestamp?.seconds
+                    ? new Date(data.timestamp.seconds * 1000).toLocaleString()
+                    : "Pending timestamp";
+                    feedbackItem.innerHTML = `<pre>                                       <button class="deleteFeedback" style="background-color: red;
                                           color:white; font-size: 12px; border: none; padding: 8px 12 px; cursor:pointer; transform: translateY(-15px);
                                            border-radius:5px;">✖</button></pre>
                                           <strong>${data.feedback}</strong><br>
                                          <pre style="font-family: 'Courier New', monospace;" >            ${time}</pre>`;
-                feedbackItem.querySelector(".deleteFeedback").addEventListener("click", () => {
-                    deleteDoc(doc.ref);
-                });
-                feedbackContainer.appendChild(feedbackItem);
+                    feedbackItem.querySelector(".deleteFeedback").addEventListener("click", () => {
+                        deleteDoc(doc.ref);
+                    });
+                    feedbackContainer.appendChild(feedbackItem);
+
+                }
             });
         });
     //if user is not logged in
