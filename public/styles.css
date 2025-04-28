@@ -261,13 +261,14 @@ form{
 }
 
 #feedbackContainer{
-    list-style: none;
+    list-style:none;
     padding: 0;
     margin-top: 15px;
 }
 
 #feedbackContainer li{
-    background: #e9ecef;
+    background: #31475d;
+    color: white;
     padding: 10px;
     border-radius: 5px;
     margin-bottom: 5px;
