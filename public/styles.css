@@ -6,6 +6,7 @@ body {
 
 nav {
     display: flex; /*Displays elements horizontally */
+    flex-wrap: wrap;
     align-items: center;    /*Aligns items vertically */
     justify-content: center;
     padding: 10px ;
@@ -36,6 +37,31 @@ nav a {
     transition: background-color 0.3s;
 }
 
+@media screen and (max-width: 600px) {
+    nav {
+        flex-direction: column; /* Stack items */
+        align-items: center;
+        justify-content: center;
+    }
+
+    nav img {
+        flex-direction:column;
+        display: block;
+        width: 80px; /* Scale image down */
+    }
+
+    nav ul {
+        flex-direction: column; /* Stack links vertically */
+        text-align:center;
+    }
+
+    nav a {
+        display: block;
+        padding: 8px;
+    }
+}
+
+
 nav a:hover {
     background-color: #555;
 }
@@ -56,6 +82,37 @@ nav a:hover {
     border-radius:10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     text-align:center;
+}
+
+.signup-container button, .login-container button{
+    background-color:#496886;
+    color:white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3 ease;
+    
+    
+    
+}
+
+.signup-container button:hover, .login-container button:hover{
+    background-color:#2e4760;
+}
+
+@media screen and (max-width: 857px) {
+    .authentication {
+        flex-direction: column; /* Stack elements vertically */
+        gap: 10px; /* Reduce spacing */
+        padding: 10px; /* Adjust padding for smaller screens */
+    }
+
+    .signup-container, .login-container {
+        width: 150%; /* Use percentage for better scaling */
+        max-width: 350px; /* Prevent overly large forms */
+        padding: 15px;
+    }
 }
 
 form{
