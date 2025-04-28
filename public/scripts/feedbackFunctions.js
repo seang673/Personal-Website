@@ -64,7 +64,7 @@ onAuthStateChanged(auth, (user) => {
                                           color:white; font-size: 12px; border: none; padding: 8px 12 px; cursor:pointer; transform: translateY(-15px);
                                            border-radius:5px;">✖</button></pre>
                                           <strong>${data.feedback}</strong><br>
-                                         <pre style="font-family: 'Courier New', monospace;" >            ${time}</pre>`;
+                                         <pre style="font-family: 'Geneva', monospace;" >                  ${time}</pre>`;
                     feedbackItem.querySelector(".deleteFeedback").addEventListener("click", () => {
                         deleteDoc(doc.ref);
                     });
