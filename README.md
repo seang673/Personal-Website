@@ -3,7 +3,7 @@
   - A personal description
   - A project portfolio
   - My up-to-date resume
-  - Contacts
+  - Contact Information
 
 ## Current Status
 - This is a website that is hosted using Firebase hosting
