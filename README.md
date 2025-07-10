@@ -3,11 +3,11 @@
   - A personal description
   - A project portfolio
   - My up-to-date resume
-  - Contacts
+  - Contact Information
 
 ## Current Status
 - This is a website that is hosted using Firebase hosting
-- A user feedback functionality is soon to follow!
+- Authentication and feedback functionalities have been added!
 
 ## Where to Access Site
 Live Site:  https://personal-website-de16c.web.app
