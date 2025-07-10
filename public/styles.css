@@ -92,9 +92,7 @@ nav a:hover {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3 ease;
-    
-    
-    
+
 }
 
 .signup-container button:hover, .login-container button:hover{
