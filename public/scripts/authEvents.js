@@ -14,6 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    feedbackSection.display = "none";
+    
     const originalAuthDisplay = authSection.style.display;
     const originalContainerJustify = centerContainer.style.justifyContent;
 
