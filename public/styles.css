@@ -95,6 +95,14 @@ nav a:hover {
 
 }
 
+.auth-field{
+    border-radius:6px;
+    border: 1px solid #ccc;
+    padding:4px;
+    box-shadow: 0 0 5px rgba(147, 206, 217, 0.5);
+}
+
+
 .signup-container button:hover, .login-container button:hover{
     background-color:#2e4760;
 }
@@ -233,6 +241,7 @@ form{
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     text-align:center;
 }
+
 .contacts-content{
     justify-content:center;
     text-align:center;
