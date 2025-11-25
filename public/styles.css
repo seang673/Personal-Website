@@ -285,8 +285,8 @@ form{
     padding:5px;
 }
 #feedbackSection{
-    display: flex;
-    flex-direction:column;
+    display: none;
+    flex-direction: column;
     justify-content:center;
     align-items:flex-end;
     padding:10px;
