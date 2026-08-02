@@ -10,8 +10,8 @@
 const SECTIONS = ["about", "portfolio", "resume", "contacts", "feedback"];
 
 /** Keep in sync with --zoom-ms / the overlay fade in styles.css. */
-const ZOOM_MS = 700;
-const CLOSE_MS = 460;
+const ZOOM_MS = 1000;
+const CLOSE_MS = 620;
 /** A cloud is ~300px wide, so an uncapped fit-to-viewport scale gets absurd. */
 const MAX_SCALE = 8;
 
@@ -209,6 +209,23 @@ document.addEventListener("DOMContentLoaded", () => {
             event.preventDefault();
             first.focus();
         }
+    });
+
+    // Sand props animate on :hover, which touch devices don't have. Tapping
+    // one adds .is-playing to run the same keyframes, cleared on animationend
+    // so the next tap replays it. They are decorative and live inside the
+    // aria-hidden backdrop, so they are deliberately not focusable — a
+    // focusable element inside aria-hidden is worse than an unreachable
+    // easter egg.
+    document.querySelectorAll(".beach-props .prop").forEach((prop) => {
+        const play = () => {
+            if (prop.classList.contains("is-playing")) return;
+            prop.classList.add("is-playing");
+        };
+        prop.addEventListener("pointerdown", (event) => {
+            if (event.pointerType !== "mouse") play();
+        });
+        prop.addEventListener("animationend", () => prop.classList.remove("is-playing"));
     });
 
     window.addEventListener("hashchange", () => sync(true));

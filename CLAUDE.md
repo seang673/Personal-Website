@@ -60,7 +60,7 @@ Feedback docs live in the Firestore `feedbacks` collection with `{ feedback, tim
 ### Beach backdrop
 One hand-authored SVG, `viewBox="0 0 1440 900"`, `preserveAspectRatio="xMidYMid slice"`. No image assets.
 
-- **Palette lives in `:root` custom properties** at the top of styles.css — retune the scene from there rather than editing SVG fills.
+- **Palette lives in `:root` custom properties** at the top of styles.css — retune the scene from there rather than editing SVG fills. The palms are lit rather than silhouetted (`--palm-trunk`, `--palm-leaf`); `--gull` keeps the dark silhouette treatment for the distant birds.
 - **Layout contract:** horizon at `y=470`, sand edge at `y≈644`. Because `slice` crops the top and bottom on wide screens and the sides on narrow ones, keep beach props inside **y 640–860**, and inside **x 510–930** if they should survive a portrait phone. The bottom-right of the sand is deliberately left empty — that is where `.sand-signoff` sits.
 - **Repeated shapes use `<defs>` + `<use>`**: `#frond`, `#gull`, `#wisp`, `#crab`, `#seaweed`, `#lounger`, `#footprint`, the three shells, `#starfish`, and the three `#cloud-a/b/c` symbols the nav clouds reference.
 
@@ -70,10 +70,19 @@ One hand-authored SVG, `viewBox="0 0 1440 900"`, `preserveAspectRatio="xMidYMid 
 - **Gulls** split glide from flap: `.gull` animates `translateX` only (origin-independent, so a transformed ancestor is harmless), while `.gull-wing` uses `transform-box: fill-box` for the `scaleY` wing beat.
 - **Crabs** and **glints** likewise use `fill-box`, since they scale/rotate about their own shape.
 - **Seaweed** uses `view-box` with a per-clump `transform-origin` set inline.
-- **Wave and shimmer paths are drawn to 2× the viewBox width** so the `translateX(-1440px)` drift loops seamlessly. Changing the viewBox means redrawing them.
+- **Swells roll toward the shore, never sideways.** Six `.swell` crests are authored at `y=0` (`#crest-a/b/c`), placed by `<use y="486">`, and animated down to the waterline with a slight `scaleX` growth for perspective, fading in and out at both ends. Nothing in the water drifts horizontally — that is what previously made the ocean read as a river. The crests are authored **wider than the viewBox** (starting at negative x) so the sub-1 `scaleX` at the start of the roll never exposes a gap at the edges. `.foam` at the waterline laps up the sand and back on its own cycle.
 - The **sun's reflection and all 21 glints** are authored around `x=790` and wrapped in `<g class="sun-reflection" transform="translate(…)">`, so the sun can be moved by editing one number instead of 21. The sun sits *on* the horizon on purpose — a few pixels higher and it washes out completely against the orange sky.
 
-All motion is `transform`/`opacity` only and is killed under `@media (prefers-reduced-motion: reduce)`, where glints hold at a mid opacity so the water still reads as sunlit.
+All motion is `transform`/`opacity` only and is killed under `@media (prefers-reduced-motion: reduce)`, where glints hold at a mid opacity and the swells take fixed offsets, so the water still reads as sunlit and layered when nothing is moving.
+
+### Hoverable sand props
+The crab, starfish, beach ball, shells and seaweed each play a one-shot animation on hover. Three things make that work, and all three are load-bearing:
+
+1. **`.sky` is `pointer-events: none`** (with `.sky-cloud` opting back in), or it would swallow every hover before it reached the scene. `.beach-backdrop` is `z-index: 0` rather than `-1` for the same reason — a negative layer sits behind the propagated body background.
+2. **`.interactive` re-enables hit testing** on individual props inside the otherwise `pointer-events: none` backdrop, and carries an invisible `<circle … fill="none" pointer-events="all">`, since the painted geometry alone is too thin to hover.
+3. **The hit circle sits outside the animated `.prop` group.** `:hover` is read on the static `.interactive` wrapper. If the moving group owned the hit area, a prop that leaps away from the pointer would drop the hover, snap back, and retrigger in a flicker loop.
+
+Props that already have an idle animation (crab, seaweed) keep it on the outer group and take the hover animation on the nested `.prop`, so the two never fight over `transform`. The animations use a single iteration, so they settle even while the pointer stays put and replay on the next hover. `skyNav.js` adds `.is-playing` on non-mouse `pointerdown` for the touch path. The props are deliberately **not focusable**: they are decorative and live inside the `aria-hidden` backdrop, where a focusable element would be worse than an unreachable easter egg.
 
 ### Styling
 All styles are in a single [public/styles.css](public/styles.css). Some feedback-list markup is styled inline within template strings in feedbackFunctions.js.
@@ -84,7 +93,7 @@ All styles are in a single [public/styles.css](public/styles.css). Some feedback
 2. **Cards are frosted glass** (`backdrop-filter`), so text uses `var(--ink)` / `var(--ink-soft)`, not white. The `@supports not (backdrop-filter…)` fallback swaps in opaque backgrounds — keep new translucent surfaces listed there.
 3. **The panel is the only glass surface** for section content. `.about-me` / `.portfolio` / `.resume` / `.contacts` deliberately have no background or blur of their own; stacking glass on glass looks muddy and doubles GPU cost.
 4. **Cloud layout is responsive in three tiers**: absolute `--x/--y/--w` on desktop, a 2-2-1 two-column grid under 860px wide, and a single row of five under 520px tall. Five clouds at a tappable size total more height than the sky has above the horizon, which is why the phone layout can't just stack them. The `max-height` block must use `.sky-cloud[data-section=…]` for `top`, to outrank the width-based block that also matches at that size.
-5. `--shimmer` must stay low-opacity — the highlight bands are dashed strokes and start to read as road markings the moment they get opaque.
+5. `--zoom-ms` in styles.css and `CLOSE_MS` in skyNav.js must be retuned together; the script hides the overlay on a timer.
 
 ## Deployment
 

@@ -102,6 +102,14 @@
 
       <path id="wisp" d="M10,26 C-6,26 -8,10 8,8 C10,-8 34,-14 44,-2 C54,-16 82,-12 84,4 C102,2 106,20 92,26 Z"/>
 
+      <!-- Wave crests: thin ribbons authored at y=0 and wider than the viewBox,
+           so the scaleX at the start of the roll never exposes a gap at the
+           edges. Each is a wavy top edge, a straight right edge, then the same
+           wave traversed in reverse. -->
+      <path id="crest-a" d="M-180,0c60,-8 120,-8 180,0c60,8 120,8 180,0c60,-8 120,-8 180,0c60,8 120,8 180,0c60,-8 120,-8 180,0c60,8 120,8 180,0c60,-8 120,-8 180,0c60,8 120,8 180,0c60,-8 120,-8 180,0c60,8 120,8 180,0L1620,13c-60,8 -120,8 -180,0c-60,-8 -120,-8 -180,0c-60,8 -120,8 -180,0c-60,-8 -120,-8 -180,0c-60,8 -120,8 -180,0c-60,-8 -120,-8 -180,0c-60,8 -120,8 -180,0c-60,-8 -120,-8 -180,0c-60,8 -120,8 -180,0c-60,-8 -120,-8 -180,0Z"/>
+      <path id="crest-b" d="M-144,0c48,-6 96,-6 144,0c48,6 96,6 144,0c48,-6 96,-6 144,0c48,6 96,6 144,0c48,-6 96,-6 144,0c48,6 96,6 144,0c48,-6 96,-6 144,0c48,6 96,6 144,0c48,-6 96,-6 144,0c48,6 96,6 144,0c48,-6 96,-6 144,0c48,6 96,6 144,0L1584,10c-48,6 -96,6 -144,0c-48,-6 -96,-6 -144,0c-48,6 -96,6 -144,0c-48,-6 -96,-6 -144,0c-48,6 -96,6 -144,0c-48,-6 -96,-6 -144,0c-48,6 -96,6 -144,0c-48,-6 -96,-6 -144,0c-48,6 -96,6 -144,0c-48,-6 -96,-6 -144,0c-48,6 -96,6 -144,0c-48,-6 -96,-6 -144,0Z"/>
+      <path id="crest-c" d="M-240,0c80,-11 160,-11 240,0c80,11 160,11 240,0c80,-11 160,-11 240,0c80,11 160,11 240,0c80,-11 160,-11 240,0c80,11 160,11 240,0c80,-11 160,-11 240,0c80,11 160,11 240,0L1680,17c-80,11 -160,11 -240,0c-80,-11 -160,-11 -240,0c-80,11 -160,11 -240,0c-80,-11 -160,-11 -240,0c-80,11 -160,11 -240,0c-80,-11 -160,-11 -240,0c-80,11 -160,11 -240,0c-80,-11 -160,-11 -240,0Z"/>
+
       <!-- Three cloud silhouettes so the five interactive clouds don't read
            as copy-paste. Referenced from the HTML sky layer below. -->
       <symbol id="cloud-a" viewBox="0 0 220 130">
@@ -181,11 +189,11 @@
     </g>
 
     <!-- ---- Seagulls over the water ---- -->
-    <g transform="translate(0 300)"><g class="gull gull-1"><g class="gull-wing"><use href="#gull" transform="scale(1.5)"  fill="var(--palm)" opacity="0.62"/></g></g></g>
-    <g transform="translate(0 252)"><g class="gull gull-2"><g class="gull-wing"><use href="#gull" transform="scale(1.15)" fill="var(--palm)" opacity="0.52"/></g></g></g>
-    <g transform="translate(0 348)"><g class="gull gull-3"><g class="gull-wing"><use href="#gull" transform="scale(0.85)" fill="var(--palm)" opacity="0.40"/></g></g></g>
-    <g transform="translate(0 214)"><g class="gull gull-4"><g class="gull-wing"><use href="#gull" transform="scale(0.68)" fill="var(--palm)" opacity="0.32"/></g></g></g>
-    <g transform="translate(0 384)"><g class="gull gull-5"><g class="gull-wing"><use href="#gull" transform="scale(1.05)" fill="var(--palm)" opacity="0.46"/></g></g></g>
+    <g transform="translate(0 300)"><g class="gull gull-1"><g class="gull-wing"><use href="#gull" transform="scale(1.5)"  fill="var(--gull)" opacity="0.62"/></g></g></g>
+    <g transform="translate(0 252)"><g class="gull gull-2"><g class="gull-wing"><use href="#gull" transform="scale(1.15)" fill="var(--gull)" opacity="0.52"/></g></g></g>
+    <g transform="translate(0 348)"><g class="gull gull-3"><g class="gull-wing"><use href="#gull" transform="scale(0.85)" fill="var(--gull)" opacity="0.40"/></g></g></g>
+    <g transform="translate(0 214)"><g class="gull gull-4"><g class="gull-wing"><use href="#gull" transform="scale(0.68)" fill="var(--gull)" opacity="0.32"/></g></g></g>
+    <g transform="translate(0 384)"><g class="gull gull-5"><g class="gull-wing"><use href="#gull" transform="scale(1.05)" fill="var(--gull)" opacity="0.46"/></g></g></g>
 
     <!-- ---- Horizon haze ---- -->
     <rect x="0" y="436" width="1440" height="62" fill="url(#hazeGrad)"/>
@@ -198,20 +206,17 @@
       <ellipse cx="790" cy="530" rx="145" ry="82" fill="url(#reflectGlow)"/>
     </g>
 
-    <!-- Rolling highlight bands. Drawn to 2880 (2x viewBox width) so the
-         -1440px drift loops with no seam. -->
-    <path class="shimmer shimmer-1" fill="none" stroke="var(--shimmer)" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="26 58 9 74 40 36"
-          d="M0,496c60,-6 120,-6 180,0c60,6 120,6 180,0c60,-6 120,-6 180,0c60,6 120,6 180,0c60,-6 120,-6 180,0c60,6 120,6 180,0c60,-6 120,-6 180,0c60,6 120,6 180,0c60,-6 120,-6 180,0c60,6 120,6 180,0c60,-6 120,-6 180,0c60,6 120,6 180,0c60,-6 120,-6 180,0c60,6 120,6 180,0c60,-6 120,-6 180,0c60,6 120,6 180,0"/>
-    <path class="shimmer shimmer-2" fill="none" stroke="var(--shimmer)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="14 66 34 48 8 52"
-          d="M0,545c80,8 160,8 240,0c80,-8 160,-8 240,0c80,8 160,8 240,0c80,-8 160,-8 240,0c80,8 160,8 240,0c80,-8 160,-8 240,0c80,8 160,8 240,0c80,-8 160,-8 240,0c80,8 160,8 240,0c80,-8 160,-8 240,0c80,8 160,8 240,0c80,-8 160,-8 240,0"/>
-
-    <!-- ---- Wave bands ---- -->
-    <path class="wave wave-1" fill="rgba(255,255,255,0.10)"
-          d="M0,508c60,-9 120,-9 180,0c60,9 120,9 180,0c60,-9 120,-9 180,0c60,9 120,9 180,0c60,-9 120,-9 180,0c60,9 120,9 180,0c60,-9 120,-9 180,0c60,9 120,9 180,0c60,-9 120,-9 180,0c60,9 120,9 180,0c60,-9 120,-9 180,0c60,9 120,9 180,0c60,-9 120,-9 180,0c60,9 120,9 180,0c60,-9 120,-9 180,0c60,9 120,9 180,0L2880,668L0,668Z"/>
-    <path class="wave wave-2" fill="rgba(38,79,110,0.26)"
-          d="M0,556c48,-7 96,-7 144,0c48,7 96,7 144,0c48,-7 96,-7 144,0c48,7 96,7 144,0c48,-7 96,-7 144,0c48,7 96,7 144,0c48,-7 96,-7 144,0c48,7 96,7 144,0c48,-7 96,-7 144,0c48,7 96,7 144,0c48,-7 96,-7 144,0c48,7 96,7 144,0c48,-7 96,-7 144,0c48,7 96,7 144,0c48,-7 96,-7 144,0c48,7 96,7 144,0c48,-7 96,-7 144,0c48,7 96,7 144,0c48,-7 96,-7 144,0c48,7 96,7 144,0L2880,668L0,668Z"/>
-    <path class="wave wave-3" fill="rgba(255,255,255,0.20)"
-          d="M0,604c40,-6 80,-6 120,0c40,6 80,6 120,0c40,-6 80,-6 120,0c40,6 80,6 120,0c40,-6 80,-6 120,0c40,6 80,6 120,0c40,-6 80,-6 120,0c40,6 80,6 120,0c40,-6 80,-6 120,0c40,6 80,6 120,0c40,-6 80,-6 120,0c40,6 80,6 120,0c40,-6 80,-6 120,0c40,6 80,6 120,0c40,-6 80,-6 120,0c40,6 80,6 120,0c40,-6 80,-6 120,0c40,6 80,6 120,0c40,-6 80,-6 120,0c40,6 80,6 120,0c40,-6 80,-6 120,0c40,6 80,6 120,0c40,-6 80,-6 120,0c40,6 80,6 120,0L2880,668L0,668Z"/>
+    <!-- ---- Swells rolling toward the shore ----
+         Each crest is authored at y=0 and placed by the <use>; the CSS drives
+         it down the water and fades it in and out, so the motion reads as
+         waves coming in rather than a river flowing sideways. Nothing here
+         drifts horizontally. -->
+    <g class="swell swell-1"><use href="#crest-a" y="486" fill="rgba(255,255,255,0.26)"/></g>
+    <g class="swell swell-2"><use href="#crest-b" y="486" fill="rgba(38,79,110,0.30)"/></g>
+    <g class="swell swell-3"><use href="#crest-c" y="486" fill="rgba(255,255,255,0.32)"/></g>
+    <g class="swell swell-4"><use href="#crest-a" y="486" fill="rgba(38,79,110,0.34)"/></g>
+    <g class="swell swell-5"><use href="#crest-b" y="486" fill="rgba(255,255,255,0.28)"/></g>
+    <g class="swell swell-6"><use href="#crest-c" y="486" fill="rgba(38,79,110,0.26)"/></g>
 
     <!-- ---- Sun-path sparkle (shifted with the reflection above) ---- -->
     <g class="sun-reflection" transform="translate(-215 0)">
@@ -251,7 +256,7 @@
           d="M0,644 C160,632 320,650 480,638 C640,626 800,646 960,636 C1120,626 1280,644 1440,634 L1440,714 L0,724 Z"/>
 
     <!-- Foam lapping onto the sand, drawn over the sand edge. -->
-    <path class="wave wave-4" fill="rgba(255,255,255,0.5)"
+    <path class="foam" fill="rgba(255,255,255,0.5)"
           d="M0,634c30,-4 60,-4 90,0c30,4 60,4 90,0c30,-4 60,-4 90,0c30,4 60,4 90,0c30,-4 60,-4 90,0c30,4 60,4 90,0c30,-4 60,-4 90,0c30,4 60,4 90,0c30,-4 60,-4 90,0c30,4 60,4 90,0c30,-4 60,-4 90,0c30,4 60,4 90,0c30,-4 60,-4 90,0c30,4 60,4 90,0c30,-4 60,-4 90,0c30,4 60,4 90,0c30,-4 60,-4 90,0c30,4 60,4 90,0c30,-4 60,-4 90,0c30,4 60,4 90,0c30,-4 60,-4 90,0c30,4 60,4 90,0c30,-4 60,-4 90,0c30,4 60,4 90,0c30,-4 60,-4 90,0c30,4 60,4 90,0c30,-4 60,-4 90,0c30,4 60,4 90,0c30,-4 60,-4 90,0c30,4 60,4 90,0c30,-4 60,-4 90,0c30,4 60,4 90,0L2880,664L0,664Z"/>
 
     <!-- ---- Beach props ----
@@ -266,25 +271,66 @@
         <use href="#footprint" transform="translate(350 740) rotate(-18)"/>
       </g>
 
-      <g class="seaweed" style="transform-origin:300px 660px"><use href="#seaweed" transform="translate(300 660)"/></g>
-      <g class="seaweed seaweed-2" style="transform-origin:620px 652px"><use href="#seaweed" transform="translate(620 652) scale(0.85)"/></g>
-      <g class="seaweed seaweed-3" style="transform-origin:1000px 658px"><use href="#seaweed" transform="translate(1000 658) scale(1.1)"/></g>
+      <!-- Interactive props.
+           `.interactive` opts back into hit testing (the whole backdrop is
+           pointer-events:none) and carries an invisible hit shape, since the
+           painted geometry alone is too thin to hover. The idle animation and
+           the hover animation live on separate nested groups so they never
+           fight over `transform`. -->
+      <g class="seaweed" style="transform-origin:300px 660px">
+        <g class="interactive">
+          <circle cx="300" cy="640" r="30" fill="none" pointer-events="all"/>
+          <g class="prop prop-seaweed"><use href="#seaweed" transform="translate(300 660)"/></g>
+        </g>
+      </g>
+      <g class="seaweed seaweed-2" style="transform-origin:620px 652px">
+        <g class="interactive">
+          <circle cx="620" cy="634" r="27" fill="none" pointer-events="all"/>
+          <g class="prop prop-seaweed"><use href="#seaweed" transform="translate(620 652) scale(0.85)"/></g>
+        </g>
+      </g>
+      <g class="seaweed seaweed-3" style="transform-origin:1000px 658px">
+        <g class="interactive">
+          <circle cx="1000" cy="636" r="32" fill="none" pointer-events="all"/>
+          <g class="prop prop-seaweed"><use href="#seaweed" transform="translate(1000 658) scale(1.1)"/></g>
+        </g>
+      </g>
 
-      <use href="#starfish" transform="translate(545 690) rotate(18)" fill="var(--starfish)"/>
+      <g class="interactive">
+        <circle cx="545" cy="690" r="30" fill="none" pointer-events="all"/>
+        <g class="prop prop-starfish"><use href="#starfish" transform="translate(545 690) rotate(18)" fill="var(--starfish)"/></g>
+      </g>
 
-      <use class="prop-small" href="#shell-clam"    transform="translate(430 706) rotate(-12) scale(0.85)" fill="var(--shell-2)"/>
-      <use class="prop-small" href="#shell-scallop" transform="translate(655 726) rotate(8) scale(0.8)"    fill="var(--shell)"/>
-      <use href="#shell-conch" transform="translate(890 706) rotate(-20) scale(0.95)" fill="var(--shell-2)"/>
-      <use class="prop-small" href="#shell-clam"    transform="translate(350 770) rotate(16) scale(0.9)"   fill="var(--shell)"/>
+      <g class="interactive prop-small">
+        <circle cx="430" cy="695" r="22" fill="none" pointer-events="all"/>
+        <g class="prop prop-shell"><use href="#shell-clam" transform="translate(430 706) rotate(-12) scale(0.85)" fill="var(--shell-2)"/></g>
+      </g>
+      <g class="interactive prop-small">
+        <circle cx="655" cy="710" r="22" fill="none" pointer-events="all"/>
+        <g class="prop prop-shell"><use href="#shell-scallop" transform="translate(655 726) rotate(8) scale(0.8)" fill="var(--shell)"/></g>
+      </g>
+      <g class="interactive">
+        <circle cx="890" cy="690" r="24" fill="none" pointer-events="all"/>
+        <g class="prop prop-shell"><use href="#shell-conch" transform="translate(890 706) rotate(-20) scale(0.95)" fill="var(--shell-2)"/></g>
+      </g>
+      <g class="interactive prop-small">
+        <circle cx="350" cy="759" r="22" fill="none" pointer-events="all"/>
+        <g class="prop prop-shell"><use href="#shell-clam" transform="translate(350 770) rotate(16) scale(0.9)" fill="var(--shell)"/></g>
+      </g>
 
-      <!-- Beach ball -->
-      <g transform="translate(487 812)">
-        <ellipse cy="19" rx="17" ry="4" fill="var(--sand-shadow)"/>
-        <circle r="18" fill="var(--ball-b)"/>
-        <path d="M0,-18 A18,18 0 0 1 12.7,-12.7 L0,0 Z" fill="var(--ball-a)"/>
-        <path d="M12.7,12.7 A18,18 0 0 1 0,18 L0,0 Z" fill="var(--ball-a)"/>
-        <path d="M-18,0 A18,18 0 0 1 -12.7,-12.7 L0,0 Z" fill="var(--ball-c)"/>
-        <path d="M12.7,-12.7 A18,18 0 0 1 18,0 L0,0 Z" fill="var(--ball-c)"/>
+      <!-- Beach ball. The shadow stays outside .prop so it doesn't bounce too. -->
+      <ellipse cx="487" cy="831" rx="17" ry="4" fill="var(--sand-shadow)"/>
+      <g class="interactive">
+        <circle cx="487" cy="812" r="24" fill="none" pointer-events="all"/>
+        <g class="prop prop-ball">
+        <g transform="translate(487 812)">
+          <circle r="18" fill="var(--ball-b)"/>
+          <path d="M0,-18 A18,18 0 0 1 12.7,-12.7 L0,0 Z" fill="var(--ball-a)"/>
+          <path d="M12.7,12.7 A18,18 0 0 1 0,18 L0,0 Z" fill="var(--ball-a)"/>
+          <path d="M-18,0 A18,18 0 0 1 -12.7,-12.7 L0,0 Z" fill="var(--ball-c)"/>
+          <path d="M12.7,-12.7 A18,18 0 0 1 18,0 L0,0 Z" fill="var(--ball-c)"/>
+        </g>
+        </g>
       </g>
 
       <use href="#lounger" transform="translate(600 792) scale(1.05)"/>
@@ -305,16 +351,27 @@
         </g>
       </g>
 
-      <g class="crab crab-1"><use href="#crab" transform="translate(520 848) scale(0.95)"/></g>
-      <g class="crab crab-2 prop-small"><use href="#crab" transform="translate(912 762) scale(0.7)"/></g>
+      <g class="crab crab-1">
+        <g class="interactive">
+          <circle cx="520" cy="845" r="28" fill="none" pointer-events="all"/>
+          <g class="prop prop-crab"><use href="#crab" transform="translate(520 848) scale(0.95)"/></g>
+        </g>
+      </g>
+      <g class="crab crab-2 prop-small">
+        <g class="interactive">
+          <circle cx="912" cy="760" r="22" fill="none" pointer-events="all"/>
+          <g class="prop prop-crab"><use href="#crab" transform="translate(912 762) scale(0.7)"/></g>
+        </g>
+      </g>
     </g>
 
     <!-- ---- Palms ----
          Each palm hands its own crown coordinates to the CSS sway through
          --crown-x/--crown-y, so one .frond rule pivots correctly for both.
          Left-hand fronds add scale(-1 1) to mirror the droop. -->
-    <g class="palm palm-2" fill="var(--palm)" style="--crown-x:1348px; --crown-y:350px">
-      <path d="M1358,354 C1368,436 1364,518 1348,598 C1340,648 1330,684 1314,710 L1286,710 C1304,684 1316,648 1324,598 C1338,518 1342,436 1336,354 Z"/>
+    <g class="palm palm-2" style="--crown-x:1348px; --crown-y:350px">
+      <path class="trunk" d="M1358,354 C1368,436 1364,518 1348,598 C1340,648 1330,684 1314,710 L1286,710 C1304,684 1316,648 1324,598 C1338,518 1342,436 1336,354 Z"/>
+      <path class="trunk-rings" d="M1355,392 L1338,394 M1353,432 L1336,433 M1350,472 L1332,473 M1345,514 L1327,515 M1339,556 L1321,557 M1332,598 L1314,598 M1324,640 L1306,640"/>
       <g class="frond frond-l1"><use href="#frond" transform="translate(1348 350) rotate(82)  scale(-0.6 0.6)"/></g>
       <g class="frond frond-r1"><use href="#frond" transform="translate(1348 350) rotate(-82) scale(0.6)"/></g>
       <g class="frond frond-l2"><use href="#frond" transform="translate(1348 350) rotate(60)  scale(-0.6 0.6)"/></g>
@@ -334,8 +391,9 @@
       <circle cx="1342" cy="360" r="6"/><circle cx="1356" cy="363" r="5.5"/><circle cx="1349" cy="371" r="5"/>
     </g>
 
-    <g class="palm palm-1" fill="var(--palm)" style="--crown-x:110px; --crown-y:242px">
-      <path d="M98,246 C84,362 92,482 112,598 C121,652 134,686 154,708 L188,708 C162,684 150,650 140,598 C122,482 116,362 128,246 Z"/>
+    <g class="palm palm-1" style="--crown-x:110px; --crown-y:242px">
+      <path class="trunk" d="M98,246 C84,362 92,482 112,598 C121,652 134,686 154,708 L188,708 C162,684 150,650 140,598 C122,482 116,362 128,246 Z"/>
+      <path class="trunk-rings" d="M96,292 L125,290 M95,340 L124,338 M96,388 L126,386 M99,436 L129,434 M104,484 L134,482 M111,532 L141,530 M120,580 L150,578 M131,628 L161,626 M144,672 L174,670"/>
       <g class="frond frond-l1"><use href="#frond" transform="translate(110 242) rotate(82)  scale(-0.85 0.85)"/></g>
       <g class="frond frond-r1"><use href="#frond" transform="translate(110 242) rotate(-82) scale(0.85)"/></g>
       <g class="frond frond-l2"><use href="#frond" transform="translate(110 242) rotate(60)  scale(-0.85 0.85)"/></g>
@@ -404,7 +462,7 @@
 
   </div>
 
-  <p class="sand-signoff">Thank you for stopping by and checking out my website!</p>
+  <p class="sand-signoff">Thank you for visiting Sean Griffiths' website!</p>
 </main>
 
 <!-- ============================================================
@@ -421,8 +479,8 @@
       <section class="section-content about-me" data-section="about" hidden>
         <img class="profile-photo" src="images/profilepic.jpg" alt="Sean Griffiths" width="128" height="128">
         <h1 id="about-title">About Me</h1>
-        <p>My name is Sean Griffiths. I am a 23 year old Computer Science graduate from Georgia State University.</p>
-        <p>I have a passion for Software Development, Full-Stack Engineering, and Data Analytics. I am currently working as an Applicaton Programmer Analyst in a contract role at Citibank.</p>
+        <p>My name is Sean Griffiths. I am a 23 year old Computer Science graduate from Georgia State University, and was born and raised in Duluth, GA.</p>
+        <p>I have a passion for Software Development, Full-Stack Engineering, and Data Analytics. I am currently working as an Applicaton Programmer Analyst in a contract role at Citibank in Tampa, FL.</p>
         <p>Reach out to me if you are interested in collaborating or just having a chat!!</p>
       </section>
 
@@ -472,7 +530,7 @@
       </section>
 
       <section class="section-content contacts" data-section="contacts" hidden>
-        <h1 id="contacts-title">Contacts</h1>
+        <h1 id="contacts-title">Contact Information</h1>
         <ul>
           <li><b>Email:</b> <a href="mailto:seangriffiths673@gmail.com">seangriffiths673@gmail.com</a></li>
           <li><b>Phone Number:</b> <a href="tel:+16783131478">678-313-1478</a></li>
