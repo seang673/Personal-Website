@@ -1,7 +1,114 @@
+/* ============================================================
+   Tampa Bay sunset palette
+   Every colour in the beach scene is tunable from here.
+   ============================================================ */
+:root {
+    --sky-top:#3E5F86;  --sky-mid:#E0846F;  --sky-low:#FFC98B;
+    --sun:#FFF1C9;      --sun-halo:#FFB765;
+    --ocean-far:#4A7FA8; --ocean-near:#274F6E; --glint:#FFD9A0;
+    --sand-dry:#E9CFA3; --sand-wet:#D2AE7C;
+    --palm:#243542;
+
+    /* Frosted-glass surfaces */
+    --glass:rgba(255,255,255,0.22);
+    --glass-strong:rgba(255,255,255,0.34);
+    --glass-border:rgba(255,255,255,0.42);
+    --glass-shadow:0 8px 32px rgba(16,42,60,0.22);
+    --glass-blur:blur(14px) saturate(1.25);
+
+    /* Text on frosted surfaces */
+    --ink:#16303F;
+    --ink-soft:#2F4A5C;
+}
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    background-color:#62C1E8;
+    /* Fallback that matches the SVG sky, so there is never a flash of a
+       different colour before the scene paints. */
+    background: linear-gradient(180deg,
+        var(--sky-top) 0%, #8B7FA6 26%, var(--sky-mid) 48%,
+        #FBA85F 68%, var(--sky-low) 84%, #FFE0AE 100%);
+}
+
+/* ============================================================
+   Fixed beach backdrop — content scrolls over a locked scene
+   ============================================================ */
+.beach-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.beach-scene {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* ---- Ambient motion -----------------------------------------
+   transform/opacity only, so everything stays on the compositor
+   and never triggers layout.
+   -------------------------------------------------------------- */
+
+/* Each .frond <g> carries no transform attribute of its own and sits inside a
+   parent already translated to the crown, so local (0,0) IS the crown —
+   `view-box` + `0 0` makes the sway pivot there instead of at the leaf bbox. */
+.frond {
+    transform-box: view-box;
+    transform-origin: 0 0;
+    animation: frond-sway 8s ease-in-out infinite alternate;
+}
+
+@keyframes frond-sway {
+    from { transform: rotate(-2.2deg); }
+    to   { transform: rotate(2.2deg); }
+}
+
+.frond-l1, .frond-r1 { animation-duration: 7.2s; animation-delay: -0.4s; }
+.frond-l2, .frond-r2 { animation-duration: 8.6s; animation-delay: -1.9s; }
+.frond-l3, .frond-r3 { animation-duration: 7.8s; animation-delay: -3.1s; }
+.frond-l4, .frond-r4 { animation-duration: 9.1s; animation-delay: -2.2s; }
+.frond-l5, .frond-r5 { animation-duration: 8.2s; animation-delay: -4.6s; }
+.frond-l6, .frond-r6 { animation-duration: 7.5s; animation-delay: -1.2s; }
+.frond-l7, .frond-r7 { animation-duration: 8.9s; animation-delay: -5.3s; }
+.frond-l8, .frond-r8 { animation-duration: 8.1s; animation-delay: -3.8s; }
+
+/* Waves drift one full viewBox width; each path is drawn to 2x width
+   so the loop is seamless. */
+@keyframes wave-drift {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-1440px); }
+}
+
+.wave { animation: wave-drift 14s linear infinite; }
+.wave-1 { animation-duration: 16s; }
+.wave-2 { animation-duration: 12s; }
+.wave-3 { animation-duration: 9.5s; }
+
+@keyframes cloud-drift {
+    from { transform: translateX(-160px); }
+    to   { transform: translateX(1560px); }
+}
+
+.cloud { animation: cloud-drift 90s linear infinite; }
+.cloud-1 { animation-duration: 78s;  animation-delay: -20s; }
+.cloud-2 { animation-duration: 105s; animation-delay: -55s; }
+.cloud-3 { animation-duration: 92s;  animation-delay: -8s; }
+
+@keyframes sun-breathe {
+    from { opacity: 0.82; }
+    to   { opacity: 1; }
+}
+
+.sun-glow { animation: sun-breathe 6s ease-in-out infinite alternate; }
+
+@media (prefers-reduced-motion: reduce) {
+    .frond, .wave, .cloud, .sun-glow {
+        animation: none !important;
+    }
 }
 
 nav {
@@ -10,12 +117,21 @@ nav {
     align-items: center;    /*Aligns items vertically */
     justify-content: center;
     padding: 10px ;
-    background-color:rgb(6, 45, 73);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: rgba(10, 35, 55, 0.55);
+    backdrop-filter: blur(12px) saturate(1.3);
+    -webkit-backdrop-filter: blur(12px) saturate(1.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 4px 24px rgba(10, 30, 48, 0.25);
 }
 
 nav img{
     border-radius: 15%; /*Makes image ends round*/
     margin-right: 60px;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
 }
 
 
@@ -34,7 +150,10 @@ nav a {
     color: white;
     text-decoration: none;  /*Removes underline */
     padding: 10px;
-    transition: background-color 0.3s;
+    border-radius: 8px;
+    letter-spacing: 0.3px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 @media screen and (max-width: 600px) {
@@ -63,7 +182,8 @@ nav a {
 
 
 nav a:hover {
-    background-color: #555;
+    background-color: rgba(255, 190, 120, 0.28);
+    color: #FFF1C9;
 }
 
 .authentication{
@@ -72,39 +192,72 @@ nav a:hover {
     padding: 20px;
     align-items: center;
     justify-content: center;
-
+    flex-wrap: wrap;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .signup-container, .login-container{
     width:400px;
-    padding: 10px;
-    background-color:rgb(144, 212, 212);
-    border-radius:10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 100%;
+    box-sizing: border-box; /* keep padding inside the declared width */
+    padding: 18px;
+    background: var(--glass-strong);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius:16px;
+    box-shadow: var(--glass-shadow);
     text-align:center;
+    color: var(--ink);
+}
+
+.signup-container h2, .login-container h2{
+    color: var(--ink);
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    letter-spacing: 0.4px;
+}
+
+.signup-container label, .login-container label{
+    color: var(--ink-soft);
+    font-size: 0.95em;
+    text-align: left;
 }
 
 .signup-container button, .login-container button{
-    background-color:#496886;
+    background-color:#1F4C6B;
     color:white;
     padding: 10px 20px;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3 ease;
-
+    font-size: 15px;
+    box-shadow: 0 2px 10px rgba(16, 42, 60, 0.28);
+    transition: background-color 0.3s ease, transform 0.15s ease;
 }
 
 .auth-field{
-    border-radius:6px;
-    border: 1px solid #ccc;
-    padding:4px;
-    box-shadow: 0 0 5px rgba(147, 206, 217, 0.5);
+    border-radius:8px;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    background: rgba(255, 255, 255, 0.72);
+    color: var(--ink);
+    padding:8px;
+    box-shadow: inset 0 1px 3px rgba(16, 42, 60, 0.12);
 }
 
+.auth-field::placeholder{
+    color: rgba(47, 74, 92, 0.6);
+}
+
+.auth-field:focus{
+    outline: 2px solid rgba(255, 183, 101, 0.85);
+    outline-offset: 1px;
+    background: rgba(255, 255, 255, 0.88);
+}
 
 .signup-container button:hover, .login-container button:hover{
-    background-color:#2e4760;
+    background-color:#123449;
+    transform: translateY(-1px);
 }
 
 @media screen and (max-width: 857px) {
@@ -112,10 +265,12 @@ nav a:hover {
         flex-direction: column; /* Stack elements vertically */
         gap: 10px; /* Reduce spacing */
         padding: 10px; /* Adjust padding for smaller screens */
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .signup-container, .login-container {
-        width: 150%; /* Use percentage for better scaling */
+        width: 100%; /* was 150%, which overflowed the viewport */
         max-width: 350px; /* Prevent overly large forms */
         padding: 15px;
     }
@@ -137,22 +292,28 @@ form{
 .about-me {
     max-width: 900px;
     margin: 40px auto;
-    padding: 20px;
-    background-color: rgb(86, 144, 192);
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 28px;
+    background: var(--glass);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    box-shadow: var(--glass-shadow);
     text-align: center;
 }
 
 .about-me h1{
     align-items: center;
+    color: var(--ink);
+    letter-spacing: 0.5px;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
 .about-me p{
     font-size: 1.2em;
     align-items: center;
-    color:white;
+    color: var(--ink-soft);
+    line-height: 1.6;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
@@ -163,33 +324,50 @@ form{
     justify-content: center;
     max-width: 800px;
     margin: 40px auto;
-    padding: 20px;
-    background-color: rgb(118, 136, 156);
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 28px;
+    background: var(--glass);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    box-shadow: var(--glass-shadow);
     text-align: center;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 
 }
 
+.portfolio h1{
+    color: var(--ink);
+    letter-spacing: 0.5px;
+}
 
+/* Nested inside .portfolio — a lighter blur than the parent, since
+   stacking two heavy backdrop-filter layers looks muddy and costs GPU time. */
 .project{
     width: 90%;
     padding: 20px;
     margin: 10px 0;
-    background-color:rgb(122, 205, 212);
-    color: white;
+    background: var(--glass-strong);
+    backdrop-filter: blur(6px) saturate(1.1);
+    -webkit-backdrop-filter: blur(6px) saturate(1.1);
+    border: 1px solid rgba(255, 255, 255, 0.34);
+    color: var(--ink-soft);
     text-align: center;
-    border-radius: 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(16, 42, 60, 0.16);
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
 
+.project:hover{
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(16, 42, 60, 0.24);
 }
 
 .project h2{
-    color:black;
+    color: var(--ink);
     font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    margin: bottom 15px;
+    margin-bottom: 15px;
 }
 
 .project li{
@@ -199,19 +377,23 @@ form{
 
 .resume{
     margin: 40px auto;
-    padding: 20px;
+    padding: 28px;
     max-width: 600px;
-    background-color: rgb(22, 115, 191);
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background: var(--glass);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    box-shadow: var(--glass-shadow);
     text-align: center;
 
 }
 
 .resume h1{
-    color:black;
+    color: var(--ink);
+    letter-spacing: 0.5px;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    margin: bottom 20px;
+    margin-bottom: 20px;
 }
 
 .resume img{
@@ -222,6 +404,7 @@ form{
 
 .zoom-image{
     width: 375px;
+    max-width: 100%;   /* fixed 375px overflowed the card on narrow screens */
     height: 475px;
     transition: transform 0.3s ease;
     border-radius:9px;
@@ -233,13 +416,28 @@ form{
 
 .contacts{
     margin: 40px auto;
-    padding: 20px;
+    padding: 28px;
     gap:12px;
     max-width: 800px;
-    background-color: rgb(86, 144, 192);
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background: var(--glass);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    box-shadow: var(--glass-shadow);
     text-align:center;
+    color: var(--ink-soft);
+}
+
+.contacts li{
+    margin-bottom: 8px;
+    line-height: 1.7;
+}
+
+.contacts a{
+    color: #0F4C6B;
+    font-weight: 600;
+    transition: color 0.25s ease;
 }
 
 .contacts-content{
@@ -248,90 +446,134 @@ form{
 }
 
 .contacts h1{
-    color:black;
+    color: var(--ink);
+    letter-spacing: 0.5px;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    margin: bottom 20px;
+    margin-bottom: 20px;
 }
 
 .contacts a:hover{
-    color:rgb(105, 5, 105);
+    color:#B5541F;
 }
 
 
 .thanks-section{
     margin: 40px auto;
-    padding: 20px;
-    background-color: rgb(28, 156, 175);
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 28px;
+    background: var(--glass);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    box-shadow: var(--glass-shadow);
     text-align: center;
     max-width:600px;
 }
 
 .thanks-section h3{
-    color:black;
+    color: var(--ink);
     font-family:cursive;
 }
 
 .thanks-section pre{
     margin-top:30px;
     font-family: monospace;
-    color:white;
+    color: var(--ink);
 }
 .center-container{
     display: flex;
     justify-content: center;
     align-items: center;
     padding:5px;
+    flex-wrap: wrap;
+    max-width: 100%;
+    box-sizing: border-box;
 }
+/* NOTE: `display:none` here is the default that authEvents.js and
+   feedbackFunctions.js toggle to "block" via inline style. Do not change
+   this property or those scripts will stop showing the section. */
 #feedbackSection{
     display: none;
     flex-direction: column;
     justify-content:center;
     align-items:flex-end;
-    padding:10px;
+    padding:20px;
     max-width:350px;
+    background: var(--glass);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    box-shadow: var(--glass-shadow);
 }
 
+#feedbackSection h2, #feedbackSection h3{
+    color: var(--ink);
+    align-self: flex-start;
+    margin: 6px 0;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+/* NOTE: `display:none` is the default that authEvents.js toggles to
+   "block" on login. Do not change this property. */
 #logoutButton{
     display:none;
     text-align: center;
-    background-color:#555;
+    background-color:rgba(20, 48, 68, 0.82);
     color:white;
+    border: 1px solid rgba(255, 255, 255, 0.28);
     padding: 10px 15px;
     font-size: 16px;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
-
+    align-self: flex-end;
+    transition: background-color 0.3s ease;
 }
 
 #logoutButton:hover{
-    background-color:#373636;
+    background-color:#0E2637;
 }
 
 #feedbackInput {
     width: 100%;
     padding: 10px;
     font-size: 14px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    background: rgba(255, 255, 255, 0.72);
+    color: var(--ink);
     margin-bottom: 10px;
+    box-shadow: inset 0 1px 3px rgba(16, 42, 60, 0.12);
+}
+
+#feedbackInput::placeholder{
+    color: rgba(47, 74, 92, 0.6);
+}
+
+#feedbackInput:focus{
+    outline: 2px solid rgba(255, 183, 101, 0.85);
+    outline-offset: 1px;
+    background: rgba(255, 255, 255, 0.88);
 }
 
 /*Submit Button */
 #submitFeedback {
-    background-color: #007bff;
+    background-color: #E08A3C;
     color: white;
-    padding: 10px 15px;
+    padding: 10px 18px;
     font-size: 14px;
+    font-weight: 600;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    align-self: flex-start;
+    box-shadow: 0 2px 10px rgba(16, 42, 60, 0.24);
+    transition: background-color 0.3s ease, transform 0.15s ease;
 }
 
 #submitFeedback:hover{
-    background-color:#1257a0;
+    background-color:#C2701F;
+    transform: translateY(-1px);
 }
 
 #feedbackContainer{
@@ -341,12 +583,88 @@ form{
 }
 
 #feedbackContainer li{
-    background: #31475d;
-    color: white;
+    background: rgba(255, 255, 255, 0.42);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: var(--ink);
     padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 5px;
+    border-radius: 10px;
+    margin-bottom: 8px;
     font-size: 14px;
+    box-shadow: 0 2px 10px rgba(16, 42, 60, 0.14);
+}
+
+/* ============================================================
+   Fallback for browsers without backdrop-filter — without this the
+   translucent panels would leave text sitting on bare sky.
+   ============================================================ */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .about-me,
+    .portfolio,
+    .resume,
+    .contacts,
+    .thanks-section,
+    .signup-container,
+    .login-container,
+    #feedbackSection {
+        background: rgba(255, 255, 255, 0.86);
+    }
+
+    .project,
+    #feedbackContainer li {
+        background: rgba(255, 255, 255, 0.78);
+    }
+
+    nav {
+        background-color: rgba(10, 35, 55, 0.92);
+    }
+}
+
+/* ============================================================
+   Responsive / performance tuning
+   backdrop-filter is the main cost on low-end mobile, so the blur
+   radius drops and the rear frond layer is dropped on small screens.
+   ============================================================ */
+@media screen and (max-width: 860px) {
+    :root {
+        --glass-blur: blur(8px) saturate(1.15);
+    }
+
+    .beach-scene {
+        /* Bias the visible crop toward the horizon so the sun and water
+           still read once the viewport gets narrow. */
+        object-position: 60% 50%;
+    }
+
+    .frond-l1, .frond-r1 {
+        display: none; /* rear frond — cuts overdraw where it matters most */
+    }
+
+    .about-me,
+    .portfolio,
+    .resume,
+    .contacts,
+    .thanks-section {
+        padding: 20px;
+        margin: 24px 16px;
+    }
+
+    .zoom-image {
+        height: auto;      /* let the resume image keep its aspect ratio */
+    }
+
+    /* The zoom-on-hover has no place on touch, and scaling to 1.5x on a
+       narrow screen just pushes the image outside the card. */
+    .resume img:hover {
+        transform: none;
+    }
+
+    /* ASCII sign-off is fixed-width; let it scroll in its own box rather
+       than widening the page. */
+    .thanks-section pre {
+        overflow-x: auto;
+    }
 }
 
 
