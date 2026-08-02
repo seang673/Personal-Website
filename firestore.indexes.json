@@ -1,0 +1,14 @@
+{
+  "indexes": [
+    {
+      "comment": "Required by the feedback listener: where('userId','==',uid) + orderBy('timestamp','desc') in public/scripts/feedbackFunctions.js. Without it the onSnapshot call fails with FAILED_PRECONDITION.",
+      "collectionGroup": "feedbacks",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId", "order": "ASCENDING" },
+        { "fieldPath": "timestamp", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

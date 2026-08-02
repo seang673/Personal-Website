@@ -6,12 +6,20 @@ on:
   push:
     branches:
       - main
+
+# Least privilege: this job only needs to read the repo. Without this block the
+# token inherits the repository default, which may be read/write on everything.
+permissions:
+  contents: read
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: FirebaseExtended/action-hosting-deploy@v0
+      # Pinned to a SHA: @v0 is a moving tag on a third-party action that
+      # receives our Firebase service-account secret.
+      - uses: FirebaseExtended/action-hosting-deploy@500ac625ca2dd40cbd15f7659af953801858032a # v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PERSONAL_WEBSITE_DE16C }}

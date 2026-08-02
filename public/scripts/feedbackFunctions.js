@@ -26,6 +26,17 @@ function clearFeedbackList() {
     if (feedbackContainer) feedbackContainer.replaceChildren();
 }
 
+/** Signed-out users get an inert form, not just a hidden one — the submit
+ *  handler already refuses, but disabling the controls makes that visible
+ *  instead of letting someone type into a box that will reject them. */
+function setControlsEnabled(enabled) {
+    if (submitButton) submitButton.disabled = !enabled;
+    if (feedbackInput) {
+        feedbackInput.disabled = !enabled;
+        if (!enabled) feedbackInput.value = "";
+    }
+}
+
 function stopListening() {
     if (unsubscribeFeedback) {
         unsubscribeFeedback();
@@ -123,10 +134,12 @@ onAuthStateChanged(auth, (user) => {
 
     if (!user) {
         if (feedbackSection) feedbackSection.style.display = "none";
+        setControlsEnabled(false);
         return;
     }
 
     if (feedbackSection) feedbackSection.style.display = "block";
+    setControlsEnabled(true);
 
     const feedbackQuery = query(
         feedbackCollection,
