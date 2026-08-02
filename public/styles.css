@@ -6,8 +6,21 @@
     --sky-top:#3E5F86;  --sky-mid:#E0846F;  --sky-low:#FFC98B;
     --sun:#FFF1C9;      --sun-halo:#FFB765;
     --ocean-far:#4A7FA8; --ocean-near:#274F6E; --glint:#FFD9A0;
+    /* Keep --shimmer low: the highlight bands are drawn as dashed strokes and
+       read as road markings the moment they get opaque. */
+    --glint-hot:#FFF6DC; --shimmer:rgba(255,245,225,0.20);
     --sand-dry:#E9CFA3; --sand-wet:#D2AE7C;
+    --sand-shadow:rgba(150,108,66,0.30);
     --palm:#243542;
+
+    /* Beach props */
+    --shell:#FBEEDC;     --shell-2:#F3D9C4;  --shell-shadow:#D9B694;
+    --starfish:#E9A03C;
+    --coral:#D9603B;     --coral-dark:#9E3C1F;
+    --seaweed:#2C5B4A;
+    --chair:#F4E3C6;     --chair-frame:#8C6A46;
+    --umbrella-a:#E8613C; --umbrella-b:#FFF3DE;
+    --ball-a:#EF5D50;    --ball-b:#FFF6E4;    --ball-c:#3E86B5;
 
     /* Frosted-glass surfaces */
     --glass:rgba(255,255,255,0.22);
@@ -19,11 +32,25 @@
     /* Text on frosted surfaces */
     --ink:#16303F;
     --ink-soft:#2F4A5C;
+
+    /* Motion */
+    --zoom-ease:cubic-bezier(0.22, 1, 0.36, 1);
+    --zoom-ms:700ms;
+    --panel-delay:380ms;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+/* The sky is exactly one viewport and never scrolls — only .section-scroll
+   inside an opened panel does. This is what makes it read as a slide. */
+html, body {
+    height: 100%;
+    overflow: hidden;
 }
 
 body {
-    font-family: Arial, sans-serif;
     margin: 0;
+    font-family: Arial, sans-serif;
     /* Fallback that matches the SVG sky, so there is never a flash of a
        different colour before the scene paints. */
     background: linear-gradient(180deg,
@@ -31,8 +58,10 @@ body {
         #FBA85F 68%, var(--sky-low) 84%, #FFE0AE 100%);
 }
 
+[hidden] { display: none !important; }
+
 /* ============================================================
-   Fixed beach backdrop — content scrolls over a locked scene
+   Fixed beach backdrop — the sky zooms over a locked scene
    ============================================================ */
 .beach-backdrop {
     position: fixed;
@@ -40,6 +69,8 @@ body {
     z-index: -1;
     overflow: hidden;
     pointer-events: none;
+    transform-origin: center;
+    transition: transform var(--zoom-ms) var(--zoom-ease);
 }
 
 .beach-scene {
@@ -48,17 +79,21 @@ body {
     display: block;
 }
 
+/* Parallax: the scene pushes in slightly behind an opening panel. */
+body.is-zooming .beach-backdrop { transform: scale(1.12); }
+
 /* ---- Ambient motion -----------------------------------------
    transform/opacity only, so everything stays on the compositor
    and never triggers layout.
    -------------------------------------------------------------- */
 
-/* Each .frond <g> carries no transform attribute of its own and sits inside a
-   parent already translated to the crown, so local (0,0) IS the crown —
-   `view-box` + `0 0` makes the sway pivot there instead of at the leaf bbox. */
+/* Each .frond <g> carries no transform of its own and no transformed
+   ancestor, so its user space IS the viewBox. --crown-x/--crown-y come from
+   the parent .palm, putting the sway pivot exactly at that palm's crown.
+   The fan angle lives on the inner <use>, out of the CSS animation's way. */
 .frond {
     transform-box: view-box;
-    transform-origin: 0 0;
+    transform-origin: var(--crown-x) var(--crown-y);
     animation: frond-sway 8s ease-in-out infinite alternate;
 }
 
@@ -83,10 +118,29 @@ body {
     to   { transform: translateX(-1440px); }
 }
 
-.wave { animation: wave-drift 14s linear infinite; }
+.wave, .shimmer { animation: wave-drift 14s linear infinite; }
 .wave-1 { animation-duration: 16s; }
 .wave-2 { animation-duration: 12s; }
 .wave-3 { animation-duration: 9.5s; }
+.wave-4 { animation-duration: 7.5s; }
+.shimmer-1 { animation-duration: 21s; }
+.shimmer-2 { animation-duration: 17s; }
+
+/* Sun-path sparkle. Each glint scales about its own bbox — fill-box is
+   unambiguous here, unlike view-box which would need explicit coordinates. */
+.glint {
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+    animation: glint-twinkle 2.4s ease-in-out infinite alternate;
+}
+
+@keyframes glint-twinkle {
+    from { opacity: 0.15; transform: scaleX(0.7); }
+    to   { opacity: 0.9;  transform: scaleX(1.25); }
+}
+
+.glint-2 .glint { animation-duration: 3.1s; }
+.glint-3 .glint { animation-duration: 3.8s; }
 
 @keyframes cloud-drift {
     from { transform: translateX(-160px); }
@@ -98,6 +152,58 @@ body {
 .cloud-2 { animation-duration: 105s; animation-delay: -55s; }
 .cloud-3 { animation-duration: 92s;  animation-delay: -8s; }
 
+/* Gulls: the glide is pure translate, so it is origin-independent and safe
+   under any transform-box. The wing beat is a separate, nested transform. */
+@keyframes gull-glide {
+    from { transform: translateX(-80px); }
+    to   { transform: translateX(1540px); }
+}
+
+.gull { animation: gull-glide 56s linear infinite; }
+.gull-1 { animation-duration: 46s; animation-delay: -12s; }
+.gull-2 { animation-duration: 58s; animation-delay: -37s; }
+.gull-3 { animation-duration: 70s; animation-delay: -5s; }
+.gull-4 { animation-duration: 64s; animation-delay: -50s; }
+.gull-5 { animation-duration: 52s; animation-delay: -25s; }
+
+.gull-wing {
+    transform-box: fill-box;
+    transform-origin: 50% 40%;
+    animation: gull-flap 1.4s ease-in-out infinite;
+}
+
+@keyframes gull-flap {
+    0%, 100% { transform: scaleY(1); }
+    50%      { transform: scaleY(0.42); }
+}
+
+.gull-2 .gull-wing { animation-duration: 1.7s; }
+.gull-3 .gull-wing { animation-duration: 4.6s; }  /* coasting */
+.gull-4 .gull-wing { animation-duration: 1.2s; }
+.gull-5 .gull-wing { animation-duration: 5.2s; }  /* coasting */
+
+/* Seaweed sways from its own base; the pivot is set inline per clump. */
+.seaweed {
+    transform-box: view-box;
+    animation: frond-sway 6.4s ease-in-out infinite alternate;
+}
+.seaweed-2 { animation-duration: 5.1s; animation-delay: -2.3s; }
+.seaweed-3 { animation-duration: 7.3s; animation-delay: -1.1s; }
+
+/* Crabs shuffle sideways with a small wobble, pivoting on their feet. */
+.crab {
+    transform-box: fill-box;
+    transform-origin: 50% 90%;
+    animation: crab-scuttle 13s ease-in-out infinite alternate;
+}
+
+@keyframes crab-scuttle {
+    from { transform: translateX(-14px) rotate(-3deg); }
+    to   { transform: translateX(14px) rotate(3deg); }
+}
+
+.crab-2 { animation-duration: 17s; animation-delay: -6s; }
+
 @keyframes sun-breathe {
     from { opacity: 0.82; }
     to   { opacity: 1; }
@@ -105,128 +211,374 @@ body {
 
 .sun-glow { animation: sun-breathe 6s ease-in-out infinite alternate; }
 
-@media (prefers-reduced-motion: reduce) {
-    .frond, .wave, .cloud, .sun-glow {
-        animation: none !important;
-    }
+/* ============================================================
+   Sky layer — the five clouds are the navigation
+   ============================================================ */
+.sky {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
 }
 
-nav {
-    display: flex; /*Displays elements horizontally */
-    flex-wrap: wrap;
-    align-items: center;    /*Aligns items vertically */
-    justify-content: center;
-    padding: 10px ;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background-color: rgba(10, 35, 55, 0.55);
-    backdrop-filter: blur(12px) saturate(1.3);
-    -webkit-backdrop-filter: blur(12px) saturate(1.3);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
-    box-shadow: 0 4px 24px rgba(10, 30, 48, 0.25);
+.sky-stage {
+    position: absolute;
+    inset: 0;
+    transform-origin: center;
+    transition: transform var(--zoom-ms) var(--zoom-ease);
+    will-change: transform;
 }
 
-nav img{
-    border-radius: 15%; /*Makes image ends round*/
-    margin-right: 60px;
-    border: 2px solid rgba(255, 255, 255, 0.35);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
-}
-
-
-nav ul {
-    display: flex;  /*Displays links horizontally */
-    list-style-type: none;  /*Removes bullet points */
+/* No transform ever lands on .sky-cloud itself — skyNav.js measures its
+   layout box to work out the zoom, and the bob/hover live on the wrappers
+   inside so the two never fight over the transform property. */
+.sky-cloud {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--w);
+    max-width: 42vw;
     padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity 0.4s ease;
+}
+
+.cloud-bob {
+    display: block;
+    animation: cloud-bob 6.4s ease-in-out infinite alternate;
+}
+
+@keyframes cloud-bob {
+    from { transform: translateY(-6px); }
+    to   { transform: translateY(6px); }
+}
+
+.sky-cloud:nth-of-type(2) .cloud-bob { animation-duration: 7.1s; animation-delay: -1.8s; }
+.sky-cloud:nth-of-type(3) .cloud-bob { animation-duration: 5.8s; animation-delay: -3.4s; }
+.sky-cloud:nth-of-type(4) .cloud-bob { animation-duration: 6.9s; animation-delay: -0.9s; }
+.sky-cloud:nth-of-type(5) .cloud-bob { animation-duration: 6.1s; animation-delay: -2.6s; }
+
+.cloud-scale {
+    position: relative;
+    display: block;
+    transform-origin: center;
+    transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+.sky-cloud:hover .cloud-scale,
+.sky-cloud:focus-visible .cloud-scale {
+    transform: scale(1.25);
+    filter: brightness(1.06) drop-shadow(0 10px 22px rgba(16, 42, 60, 0.28));
+}
+
+.sky-cloud:focus { outline: none; }
+
+.sky-cloud:focus-visible .cloud-art {
+    outline: 3px solid rgba(255, 183, 101, 0.95);
+    outline-offset: 4px;
+    border-radius: 50%;
+}
+
+.cloud-art {
+    display: block;
+    width: 100%;
+    height: auto;
+    fill: rgba(255, 255, 255, 0.94);
+    filter: drop-shadow(0 6px 16px rgba(16, 42, 60, 0.22));
+}
+
+.cloud-label {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 52%;
+    transform: translateY(-50%);
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: clamp(0.95rem, 1.5vw, 1.35rem);
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    color: var(--ink);
+    pointer-events: none;
+}
+
+/* While zooming, everything that isn't the target sweeps away. The target
+   itself fades late, so the panel appears to emerge from inside it. */
+body.is-zooming .sky-cloud { opacity: 0; }
+body.is-zooming .sky-cloud.is-target { transition-delay: 0.26s; }
+
+/* Sits in the bottom-right of the sand, which the beach props deliberately
+   leave empty. Narrow enough to stay a tidy block in the corner. */
+.sand-signoff {
+    position: absolute;
+    right: 4%;
+    bottom: 7%;
     margin: 0;
+    max-width: 22ch;
+    text-align: center;
+    font-family: 'Segoe Script', 'Brush Script MT', 'Lucida Handwriting', cursive;
+    font-size: clamp(1.05rem, 1.9vw, 1.7rem);
+    line-height: 1.35;
+    color: #6B4526;
+    text-shadow: 0 1px 0 rgba(255, 245, 225, 0.55);
+    pointer-events: none;
+    transition: opacity 0.35s ease;
 }
 
-nav li {
-    margin: 0 10px;    /*Spaces out links */
-}
+body.is-zooming .sand-signoff { opacity: 0; }
 
-nav a {
-    color: white;
-    text-decoration: none;  /*Removes underline */
-    padding: 10px;
-    border-radius: 8px;
-    letter-spacing: 0.3px;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-@media screen and (max-width: 600px) {
-    nav {
-        flex-direction: column; /* Stack items */
-        align-items: center;
-        justify-content: center;
-    }
-
-    nav img {
-        flex-direction:column;
-        display: block;
-        width: 80px; /* Scale image down */
-    }
-
-    nav ul {
-        flex-direction: column; /* Stack links vertically */
-        text-align:center;
-    }
-
-    nav a {
-        display: block;
-        padding: 8px;
-    }
-}
-
-
-nav a:hover {
-    background-color: rgba(255, 190, 120, 0.28);
-    color: #FFF1C9;
-}
-
-.authentication{
+/* ============================================================
+   Section overlay — one frosted panel, one pane at a time
+   ============================================================ */
+.section-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
     display: flex;
-    gap: 20px;
-    padding: 20px;
     align-items: center;
     justify-content: center;
-    flex-wrap: wrap;
-    max-width: 100%;
-    box-sizing: border-box;
+    padding: 4vh 4vw;
+    opacity: 0;
+    pointer-events: none;
+    background: rgba(10, 35, 55, 0.28);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    transition: opacity 0.3s ease 0s;
 }
 
-.signup-container, .login-container{
-    width:400px;
-    max-width: 100%;
-    box-sizing: border-box; /* keep padding inside the declared width */
-    padding: 18px;
+.section-overlay.is-open {
+    opacity: 1;
+    pointer-events: auto;
+    transition-delay: var(--panel-delay);
+}
+
+.section-panel {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    max-height: 86dvh;
+    display: flex;
+    flex-direction: column;
+    padding: 22px 26px 26px;
     background: var(--glass-strong);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
     border: 1px solid var(--glass-border);
-    border-radius:16px;
+    border-radius: 20px;
     box-shadow: var(--glass-shadow);
-    text-align:center;
+    opacity: 0;
+    transform: scale(0.86);
+    transition: transform 0.42s var(--zoom-ease) 0s, opacity 0.32s ease 0s;
+}
+
+.section-overlay.is-open .section-panel {
+    opacity: 1;
+    transform: none;
+    transition-delay: var(--panel-delay);
+}
+
+.section-scroll {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 6px;
+}
+
+.back-button {
+    align-self: flex-start;
+    margin-bottom: 14px;
+    padding: 9px 18px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    background-color: rgba(20, 48, 68, 0.86);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(16, 42, 60, 0.24);
+    transition: background-color 0.25s ease, transform 0.15s ease;
+}
+
+.back-button:hover {
+    background-color: #0E2637;
+    transform: translateX(-2px);
+}
+
+.back-button:focus-visible {
+    outline: 2px solid rgba(255, 183, 101, 0.95);
+    outline-offset: 2px;
+}
+
+/* ============================================================
+   Section content
+   The panel is the frosted surface, so the panes themselves are
+   transparent — stacking glass on glass looks muddy and doubles
+   the GPU cost.
+   ============================================================ */
+.section-content {
+    color: var(--ink-soft);
+    text-align: center;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.section-content h1 {
+    margin-top: 0;
+    color: var(--ink);
+    letter-spacing: 0.5px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.profile-photo {
+    width: 128px;
+    height: 128px;
+    border-radius: 18%;
+    object-fit: cover;
+    border: 3px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 4px 18px rgba(16, 42, 60, 0.28);
+}
+
+.about-me p {
+    font-size: 1.15em;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    max-width: 62ch;
+    margin-inline: auto;
+}
+
+.portfolio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Nested inside the panel — a lighter blur than the parent, since
+   stacking two heavy backdrop-filter layers looks muddy and costs GPU time. */
+.project {
+    width: 100%;
+    padding: 18px 22px;
+    margin: 10px 0;
+    background: var(--glass-strong);
+    backdrop-filter: blur(6px) saturate(1.1);
+    -webkit-backdrop-filter: blur(6px) saturate(1.1);
+    border: 1px solid rgba(255, 255, 255, 0.34);
+    color: var(--ink-soft);
+    text-align: left;
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(16, 42, 60, 0.16);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.project:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(16, 42, 60, 0.24);
+}
+
+.project h2 {
+    margin: 0 0 12px;
+    color: var(--ink);
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-size: 1.18em;
+}
+
+.project ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.project li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.zoom-image {
+    width: 375px;
+    max-width: 100%;
+    height: auto;
+    border-radius: 9px;
+    box-shadow: 0 6px 22px rgba(16, 42, 60, 0.26);
+    transition: transform 0.3s ease;
+}
+
+.resume img:hover { transform: scale(1.35); }
+
+.contacts ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.contacts li {
+    margin-bottom: 10px;
+    line-height: 1.7;
+}
+
+.contacts a {
+    color: #0F4C6B;
+    font-weight: 600;
+    transition: color 0.25s ease;
+}
+
+.contacts a:hover { color: #B5541F; }
+
+/* ============================================================
+   Auth + feedback
+   NOTE: #feedbackSection and #logoutButton must keep `display:none`
+   as their CSS default — authEvents.js and feedbackFunctions.js
+   toggle them via inline style.display. authEvents.js also reads
+   .center-container's justify-content at load with no null guard,
+   so that element must stay in the DOM.
+   ============================================================ */
+.center-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    flex-wrap: wrap;
+    max-width: 100%;
+}
+
+.authentication {
+    display: flex;
+    gap: 20px;
+    padding: 10px 0;
+    align-items: stretch;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: 100%;
+}
+
+.signup-container, .login-container {
+    width: 320px;
+    max-width: 100%;
+    padding: 18px;
+    background: var(--glass-strong);
+    backdrop-filter: blur(6px) saturate(1.1);
+    -webkit-backdrop-filter: blur(6px) saturate(1.1);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(16, 42, 60, 0.16);
+    text-align: center;
     color: var(--ink);
 }
 
-.signup-container h2, .login-container h2{
+.signup-container h2, .login-container h2 {
+    margin-top: 0;
     color: var(--ink);
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     letter-spacing: 0.4px;
 }
 
-.signup-container label, .login-container label{
+.signup-container label, .login-container label {
     color: var(--ink-soft);
     font-size: 0.95em;
     text-align: left;
 }
 
-.signup-container button, .login-container button{
-    background-color:#1F4C6B;
-    color:white;
+.signup-container button, .login-container button {
+    background-color: #1F4C6B;
+    color: white;
     padding: 10px 20px;
     border: none;
     border-radius: 8px;
@@ -236,291 +588,71 @@ nav a:hover {
     transition: background-color 0.3s ease, transform 0.15s ease;
 }
 
-.auth-field{
-    border-radius:8px;
+.signup-container button:hover, .login-container button:hover {
+    background-color: #123449;
+    transform: translateY(-1px);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.auth-field {
+    border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.55);
     background: rgba(255, 255, 255, 0.72);
     color: var(--ink);
-    padding:8px;
+    padding: 8px;
     box-shadow: inset 0 1px 3px rgba(16, 42, 60, 0.12);
 }
 
-.auth-field::placeholder{
-    color: rgba(47, 74, 92, 0.6);
-}
+.auth-field::placeholder { color: rgba(47, 74, 92, 0.6); }
 
-.auth-field:focus{
+.auth-field:focus {
     outline: 2px solid rgba(255, 183, 101, 0.85);
     outline-offset: 1px;
     background: rgba(255, 255, 255, 0.88);
 }
 
-.signup-container button:hover, .login-container button:hover{
-    background-color:#123449;
-    transform: translateY(-1px);
-}
-
-@media screen and (max-width: 857px) {
-    .authentication {
-        flex-direction: column; /* Stack elements vertically */
-        gap: 10px; /* Reduce spacing */
-        padding: 10px; /* Adjust padding for smaller screens */
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-    .signup-container, .login-container {
-        width: 100%; /* was 150%, which overflowed the viewport */
-        max-width: 350px; /* Prevent overly large forms */
-        padding: 15px;
-    }
-}
-
-form{
-    display:flex;
+/* `display:none` here is the default that authEvents.js and
+   feedbackFunctions.js toggle to "block" via inline style. */
+#feedbackSection {
+    display: none;
     flex-direction: column;
-    gap: 15px;
-}
-
-.form-group{
-    display: flex;
-    flex-direction: column;
-}
-
-
-
-.about-me {
-    max-width: 900px;
-    margin: 40px auto;
-    padding: 28px;
-    background: var(--glass);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    border-radius: 16px;
-    box-shadow: var(--glass-shadow);
-    text-align: center;
-}
-
-.about-me h1{
-    align-items: center;
-    color: var(--ink);
-    letter-spacing: 0.5px;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-}
-
-.about-me p{
-    font-size: 1.2em;
-    align-items: center;
-    color: var(--ink-soft);
-    line-height: 1.6;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-}
-
-.portfolio {
-    display:flex;
-    flex-direction:column; /* Stacks inner containers vertically*/
-    align-items:center; /*Center containers horizontally*/
     justify-content: center;
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 28px;
-    background: var(--glass);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    border-radius: 16px;
-    box-shadow: var(--glass-shadow);
-    text-align: center;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-
-}
-
-.portfolio h1{
-    color: var(--ink);
-    letter-spacing: 0.5px;
-}
-
-/* Nested inside .portfolio — a lighter blur than the parent, since
-   stacking two heavy backdrop-filter layers looks muddy and costs GPU time. */
-.project{
-    width: 90%;
+    align-items: flex-end;
     padding: 20px;
-    margin: 10px 0;
+    width: 100%;
+    max-width: 420px;
+    text-align: left;
     background: var(--glass-strong);
     backdrop-filter: blur(6px) saturate(1.1);
     -webkit-backdrop-filter: blur(6px) saturate(1.1);
-    border: 1px solid rgba(255, 255, 255, 0.34);
-    color: var(--ink-soft);
-    text-align: center;
-    border-radius: 14px;
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
     box-shadow: 0 4px 16px rgba(16, 42, 60, 0.16);
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.project:hover{
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(16, 42, 60, 0.24);
-}
-
-.project h2{
-    color: var(--ink);
-    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    margin-bottom: 15px;
-}
-
-.project li{
-    margin-bottom:10px;
-    padding: 5px;
-}
-
-.resume{
-    margin: 40px auto;
-    padding: 28px;
-    max-width: 600px;
-    background: var(--glass);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    border-radius: 16px;
-    box-shadow: var(--glass-shadow);
-    text-align: center;
-
-}
-
-.resume h1{
-    color: var(--ink);
-    letter-spacing: 0.5px;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    margin-bottom: 20px;
-}
-
-.resume img{
-    overflow:hidden;
-    display:inline-block; /* Shrinks the container to the size of the image */
-
-}
-
-.zoom-image{
-    width: 375px;
-    max-width: 100%;   /* fixed 375px overflowed the card on narrow screens */
-    height: 475px;
-    transition: transform 0.3s ease;
-    border-radius:9px;
-}
-
-.resume img:hover{
-    transform: scale(1.5);
-}
-
-.contacts{
-    margin: 40px auto;
-    padding: 28px;
-    gap:12px;
-    max-width: 800px;
-    background: var(--glass);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    border-radius: 16px;
-    box-shadow: var(--glass-shadow);
-    text-align:center;
-    color: var(--ink-soft);
-}
-
-.contacts li{
-    margin-bottom: 8px;
-    line-height: 1.7;
-}
-
-.contacts a{
-    color: #0F4C6B;
-    font-weight: 600;
-    transition: color 0.25s ease;
-}
-
-.contacts-content{
-    justify-content:center;
-    text-align:center;
-}
-
-.contacts h1{
-    color: var(--ink);
-    letter-spacing: 0.5px;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    margin-bottom: 20px;
-}
-
-.contacts a:hover{
-    color:#B5541F;
-}
-
-
-.thanks-section{
-    margin: 40px auto;
-    padding: 28px;
-    background: var(--glass);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    border-radius: 16px;
-    box-shadow: var(--glass-shadow);
-    text-align: center;
-    max-width:600px;
-}
-
-.thanks-section h3{
-    color: var(--ink);
-    font-family:cursive;
-}
-
-.thanks-section pre{
-    margin-top:30px;
-    font-family: monospace;
-    color: var(--ink);
-}
-.center-container{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding:5px;
-    flex-wrap: wrap;
-    max-width: 100%;
-    box-sizing: border-box;
-}
-/* NOTE: `display:none` here is the default that authEvents.js and
-   feedbackFunctions.js toggle to "block" via inline style. Do not change
-   this property or those scripts will stop showing the section. */
-#feedbackSection{
-    display: none;
-    flex-direction: column;
-    justify-content:center;
-    align-items:flex-end;
-    padding:20px;
-    max-width:350px;
-    background: var(--glass);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    border-radius: 16px;
-    box-shadow: var(--glass-shadow);
-}
-
-#feedbackSection h2, #feedbackSection h3{
+#feedbackSection h2, #feedbackSection h3 {
     color: var(--ink);
     align-self: flex-start;
     margin: 6px 0;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
-/* NOTE: `display:none` is the default that authEvents.js toggles to
-   "block" on login. Do not change this property. */
-#logoutButton{
-    display:none;
+/* `display:none` is the default that authEvents.js toggles to "block". */
+#logoutButton {
+    display: none;
     text-align: center;
-    background-color:rgba(20, 48, 68, 0.82);
-    color:white;
+    background-color: rgba(20, 48, 68, 0.82);
+    color: white;
     border: 1px solid rgba(255, 255, 255, 0.28);
     padding: 10px 15px;
     font-size: 16px;
@@ -530,14 +662,13 @@ form{
     transition: background-color 0.3s ease;
 }
 
-#logoutButton:hover{
-    background-color:#0E2637;
-}
+#logoutButton:hover { background-color: #0E2637; }
 
 #feedbackInput {
     width: 100%;
     padding: 10px;
     font-size: 14px;
+    font-family: inherit;
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.55);
     background: rgba(255, 255, 255, 0.72);
@@ -546,17 +677,14 @@ form{
     box-shadow: inset 0 1px 3px rgba(16, 42, 60, 0.12);
 }
 
-#feedbackInput::placeholder{
-    color: rgba(47, 74, 92, 0.6);
-}
+#feedbackInput::placeholder { color: rgba(47, 74, 92, 0.6); }
 
-#feedbackInput:focus{
+#feedbackInput:focus {
     outline: 2px solid rgba(255, 183, 101, 0.85);
     outline-offset: 1px;
     background: rgba(255, 255, 255, 0.88);
 }
 
-/*Submit Button */
 #submitFeedback {
     background-color: #E08A3C;
     color: white;
@@ -571,18 +699,19 @@ form{
     transition: background-color 0.3s ease, transform 0.15s ease;
 }
 
-#submitFeedback:hover{
-    background-color:#C2701F;
+#submitFeedback:hover {
+    background-color: #C2701F;
     transform: translateY(-1px);
 }
 
-#feedbackContainer{
-    list-style:none;
+#feedbackContainer {
+    list-style: none;
     padding: 0;
     margin-top: 15px;
+    width: 100%;
 }
 
-#feedbackContainer li{
+#feedbackContainer li {
     background: rgba(255, 255, 255, 0.42);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
@@ -600,72 +729,152 @@ form{
    translucent panels would leave text sitting on bare sky.
    ============================================================ */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    .about-me,
-    .portfolio,
-    .resume,
-    .contacts,
-    .thanks-section,
+    .section-panel,
     .signup-container,
     .login-container,
     #feedbackSection {
-        background: rgba(255, 255, 255, 0.86);
+        background: rgba(255, 255, 255, 0.92);
     }
 
     .project,
     #feedbackContainer li {
-        background: rgba(255, 255, 255, 0.78);
+        background: rgba(255, 255, 255, 0.8);
     }
 
-    nav {
-        background-color: rgba(10, 35, 55, 0.92);
+    .section-overlay {
+        background: rgba(10, 35, 55, 0.42);
+    }
+
+    .cloud-label {
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
     }
 }
 
 /* ============================================================
    Responsive / performance tuning
-   backdrop-filter is the main cost on low-end mobile, so the blur
-   radius drops and the rear frond layer is dropped on small screens.
+   Clouds shrink and restack into a tighter cluster — still one
+   screen, still no scrolling. backdrop-filter is the main cost on
+   low-end mobile, so blur radii drop and the smallest scene detail
+   is culled where overdraw hurts most.
    ============================================================ */
 @media screen and (max-width: 860px) {
     :root {
         --glass-blur: blur(8px) saturate(1.15);
     }
 
-    .beach-scene {
-        /* Bias the visible crop toward the horizon so the sun and water
-           still read once the viewport gets narrow. */
-        object-position: 60% 50%;
-    }
-
     .frond-l1, .frond-r1 {
         display: none; /* rear frond — cuts overdraw where it matters most */
     }
 
-    .about-me,
-    .portfolio,
-    .resume,
-    .contacts,
-    .thanks-section {
-        padding: 20px;
-        margin: 24px 16px;
+    /* Sub-pixel noise on a phone, and every one of them costs overdraw. */
+    .prop-small,
+    .glint-3,
+    .shimmer-2,
+    .gull-4 {
+        display: none;
     }
 
-    .zoom-image {
-        height: auto;      /* let the resume image keep its aspect ratio */
+    /* Two columns, 2-2-1. A single stacked column cannot work here: five
+       clouds at a tappable size total more height than the sky has above the
+       horizon, so they would have to overlap or sit on the sea. */
+    .sky-cloud {
+        width: 44vw;          /* => 26vw tall, so rows at 13% apart never collide */
+        max-width: none;
+        margin-left: 0;
     }
 
-    /* The zoom-on-hover has no place on touch, and scaling to 1.5x on a
-       narrow screen just pushes the image outside the card. */
-    .resume img:hover {
-        transform: none;
+    .sky-cloud[data-section="about"]     { left: 3%;  top: 4%; }
+    .sky-cloud[data-section="portfolio"] { left: 53%; top: 4%; }
+    .sky-cloud[data-section="resume"]    { left: 3%;  top: 17%; }
+    .sky-cloud[data-section="contacts"]  { left: 53%; top: 17%; }
+    .sky-cloud[data-section="feedback"]  { left: 28%; top: 30%; }
+
+    /* Centred on the sand, below the umbrella and loungers. Two lines at most —
+       four lines would climb back into the furniture. */
+    .sand-signoff {
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 3%;
+        max-width: 92vw;
+        font-size: 0.95rem;
     }
 
-    /* ASCII sign-off is fixed-width; let it scroll in its own box rather
-       than widening the page. */
-    .thanks-section pre {
-        overflow-x: auto;
+    .section-overlay {
+        padding: 3vh 3vw;
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+    }
+
+    .section-panel {
+        padding: 16px 16px 20px;
+        max-height: 90dvh;
+    }
+
+    /* The zoom-on-hover has no place on touch. */
+    .resume img:hover { transform: none; }
+
+    .signup-container, .login-container { width: 100%; }
+}
+
+/* Landscape phones: the sky above the horizon is only ~200px tall, so the
+   two-column grid won't fit either. One short row of five is the only layout
+   that clears the water. */
+@media screen and (max-height: 520px) {
+    .sky-cloud {
+        width: 18vw;
+        margin-left: 0;
+    }
+
+    /* `top` needs the attribute selector here to outrank the two-column
+       block above, which also matches at this width. */
+    .sky-cloud[data-section="about"]     { left: 1%;    top: 5%; }
+    .sky-cloud[data-section="portfolio"] { left: 20.5%; top: 5%; }
+    .sky-cloud[data-section="resume"]    { left: 40%;   top: 5%; }
+    .sky-cloud[data-section="contacts"]  { left: 59.5%; top: 5%; }
+    .sky-cloud[data-section="feedback"]  { left: 79%;   top: 5%; }
+
+    .cloud-label { font-size: clamp(0.7rem, 1.6vw, 1rem); }
+
+    /* Only ~80px of sand is visible here, and the umbrella occupies most of it,
+       so the sign-off drops to a single line pinned under everything else. */
+    .sand-signoff {
+        bottom: 1%;
+        max-width: none;
+        white-space: nowrap;
+        font-size: 0.72rem;
+        text-shadow: 0 1px 2px rgba(255, 245, 225, 0.85);
     }
 }
 
+/* ============================================================
+   Reduced motion — the whole scene holds still and the zoom
+   collapses to a plain cross-fade. Glints hold at a mid opacity
+   rather than vanishing, so the water still reads as sunlit.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+    .frond, .wave, .shimmer, .cloud, .sun-glow,
+    .gull, .gull-wing, .crab, .seaweed, .glint,
+    .cloud-bob {
+        animation: none !important;
+    }
 
+    .glint { opacity: 0.55; }
 
+    .beach-backdrop,
+    .sky-stage,
+    .section-panel,
+    .section-overlay,
+    .cloud-scale,
+    .sky-cloud {
+        transition-duration: 0.001s !important;
+        transition-delay: 0s !important;
+    }
+
+    body.is-zooming .beach-backdrop { transform: none; }
+
+    .sky-cloud:hover .cloud-scale,
+    .sky-cloud:focus-visible .cloud-scale {
+        transform: scale(1.1);
+    }
+}
