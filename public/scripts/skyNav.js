@@ -228,6 +228,18 @@ document.addEventListener("DOMContentLoaded", () => {
         prop.addEventListener("animationend", () => prop.classList.remove("is-playing"));
     });
 
+    document.querySelectorAll(".palm.interactive").forEach((palm) => {
+        palm.addEventListener("pointerdown", (event) => {
+            if (event.pointerType === "mouse") return;
+            if (palm.classList.contains("is-playing")) return;
+            palm.classList.add("is-playing");
+        });
+        const firstFrond = palm.querySelector(".frond");
+        if (firstFrond) {
+            firstFrond.addEventListener("animationend", () => palm.classList.remove("is-playing"));
+        }
+    });
+
     window.addEventListener("hashchange", () => sync(true));
 
     // A resize invalidates the stored zoom, but the clouds are hidden while the

@@ -106,6 +106,24 @@ body.is-zooming .beach-backdrop { transform: scale(1.12); }
     to   { transform: rotate(2.2deg); }
 }
 
+@keyframes frond-shake {
+    0%   { transform: rotate(0deg); }
+    7%   { transform: rotate(-9deg); }
+    18%  { transform: rotate(11deg); }
+    31%  { transform: rotate(-8deg); }
+    45%  { transform: rotate(7deg); }
+    58%  { transform: rotate(-5deg); }
+    70%  { transform: rotate(4deg); }
+    82%  { transform: rotate(-2deg); }
+    92%  { transform: rotate(1deg); }
+    100% { transform: rotate(0deg); }
+}
+
+.palm.interactive:hover .frond,
+.palm.is-playing .frond {
+    animation: frond-shake 0.85s ease-in-out 1;
+}
+
 /* Fronds are green; the rear pair sits a shade darker so the crown has depth.
    Coconuts inherit the trunk brown from .palm. */
 .palm { fill: var(--palm-trunk); }
@@ -627,6 +645,57 @@ body.is-zooming .sand-signoff { opacity: 0; }
     line-height: 1.5;
 }
 
+/* Resume image with its download control sitting alongside it. */
+.resume-figure {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 14px;
+    max-width: 100%;
+}
+
+.resume-download {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    padding: 10px 12px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--ink);
+    background: var(--glass-strong);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 3px 12px rgba(16, 42, 60, 0.18);
+    transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.resume-download svg {
+    width: 26px;
+    height: 26px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.resume-download-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.resume-download:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.55);
+    box-shadow: 0 6px 18px rgba(16, 42, 60, 0.26);
+}
+
+.resume-download:focus-visible {
+    outline: 2px solid rgba(255, 183, 101, 0.95);
+    outline-offset: 2px;
+}
+
 .zoom-image {
     width: 375px;
     max-width: 100%;
@@ -847,17 +916,49 @@ form {
 }
 
 #feedbackContainer li {
+    position: relative;
     background: rgba(255, 255, 255, 0.42);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     border: 1px solid rgba(255, 255, 255, 0.4);
     color: var(--ink);
-    padding: 10px;
+    padding: 10px 40px 10px 10px;
     border-radius: 10px;
     margin-bottom: 8px;
     font-size: 14px;
     box-shadow: 0 2px 10px rgba(16, 42, 60, 0.14);
 }
+
+.feedback-text {
+    display: block;
+    word-break: break-word;
+}
+
+.feedback-time {
+    display: block;
+    margin-top: 6px;
+    font-family: 'Geneva', monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+}
+
+.deleteFeedback {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: #C0392B;
+    color: #fff;
+    font-size: 12px;
+    line-height: 1;
+    border: none;
+    padding: 5px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.deleteFeedback:hover { background-color: #96281B; }
+.deleteFeedback:disabled { opacity: 0.5; cursor: default; }
 
 /* ============================================================
    Fallback for browsers without backdrop-filter — without this the

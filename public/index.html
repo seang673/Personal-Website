@@ -353,8 +353,8 @@
 
       <g class="crab crab-1">
         <g class="interactive">
-          <circle cx="520" cy="845" r="28" fill="none" pointer-events="all"/>
-          <g class="prop prop-crab"><use href="#crab" transform="translate(520 848) scale(0.95)"/></g>
+          <circle cx="520" cy="758" r="28" fill="none" pointer-events="all"/>
+          <g class="prop prop-crab"><use href="#crab" transform="translate(520 761) scale(0.95)"/></g>
         </g>
       </g>
       <g class="crab crab-2 prop-small">
@@ -369,7 +369,7 @@
          Each palm hands its own crown coordinates to the CSS sway through
          --crown-x/--crown-y, so one .frond rule pivots correctly for both.
          Left-hand fronds add scale(-1 1) to mirror the droop. -->
-    <g class="palm palm-2" style="--crown-x:1348px; --crown-y:350px">
+    <g class="palm palm-2 interactive" style="--crown-x:1348px; --crown-y:350px">
       <path class="trunk" d="M1358,354 C1368,436 1364,518 1348,598 C1340,648 1330,684 1314,710 L1286,710 C1304,684 1316,648 1324,598 C1338,518 1342,436 1336,354 Z"/>
       <path class="trunk-rings" d="M1355,392 L1338,394 M1353,432 L1336,433 M1350,472 L1332,473 M1345,514 L1327,515 M1339,556 L1321,557 M1332,598 L1314,598 M1324,640 L1306,640"/>
       <g class="frond frond-l1"><use href="#frond" transform="translate(1348 350) rotate(82)  scale(-0.6 0.6)"/></g>
@@ -389,9 +389,10 @@
       <g class="frond frond-l8"><use href="#frond" transform="translate(1348 350) rotate(-58) scale(-0.6 0.6)"/></g>
       <g class="frond frond-r8"><use href="#frond" transform="translate(1348 350) rotate(58)  scale(0.6)"/></g>
       <circle cx="1342" cy="360" r="6"/><circle cx="1356" cy="363" r="5.5"/><circle cx="1349" cy="371" r="5"/>
+      <rect x="1200" y="264" width="220" height="460" fill="none" pointer-events="all"/>
     </g>
 
-    <g class="palm palm-1" style="--crown-x:110px; --crown-y:242px">
+    <g class="palm palm-1 interactive" style="--crown-x:110px; --crown-y:242px">
       <path class="trunk" d="M98,246 C84,362 92,482 112,598 C121,652 134,686 154,708 L188,708 C162,684 150,650 140,598 C122,482 116,362 128,246 Z"/>
       <path class="trunk-rings" d="M96,292 L125,290 M95,340 L124,338 M96,388 L126,386 M99,436 L129,434 M104,484 L134,482 M111,532 L141,530 M120,580 L150,578 M131,628 L161,626 M144,672 L174,670"/>
       <g class="frond frond-l1"><use href="#frond" transform="translate(110 242) rotate(82)  scale(-0.85 0.85)"/></g>
@@ -411,6 +412,7 @@
       <g class="frond frond-l8"><use href="#frond" transform="translate(110 242) rotate(-58) scale(-0.85 0.85)"/></g>
       <g class="frond frond-r8"><use href="#frond" transform="translate(110 242) rotate(58)  scale(0.85)"/></g>
       <circle cx="102" cy="252" r="9"/><circle cx="122" cy="256" r="8"/><circle cx="112" cy="268" r="7.5"/>
+      <rect x="30" y="165" width="200" height="560" fill="none" pointer-events="all"/>
     </g>
 
   </svg>
@@ -526,7 +528,24 @@
 
       <section class="section-content resume" data-section="resume" hidden>
         <h1 id="resume-title">My Resume</h1>
-        <img src="images/ResumeScreenshot.png" alt="Resume" class="zoom-image">
+        <!-- To serve a PDF instead, drop the file in public/images/ (or a new
+             public/files/) and change href + download here. Nothing else needs
+             to move. -->
+        <div class="resume-figure">
+          <img src="images/ResumeScreenshot.png" alt="Resume" class="zoom-image">
+          <a class="resume-download"
+             href="images/ResumeScreenshot.png"
+             download="Sean-Griffiths-Resume.png"
+             title="Download my resume"
+             aria-label="Download my resume">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M12 3.5v9.5" />
+              <path d="M8 10.5 12 14.5 16 10.5" />
+              <path d="M4.5 16.5v2.5a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1v-2.5" />
+            </svg>
+            <span class="resume-download-label">Download</span>
+          </a>
+        </div>
       </section>
 
       <section class="section-content contacts" data-section="contacts" hidden>

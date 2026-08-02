@@ -53,6 +53,16 @@ The separate module files in [public/scripts/](public/scripts/) then read those 
 ### Feedback feature
 Feedback docs live in the Firestore `feedbacks` collection with `{ feedback, timestamp, userId }`. [feedbackFunctions.js](public/scripts/feedbackFunctions.js) gates the UI on `onAuthStateChanged`, queries only the current user's docs (`where("userId", "==", user.uid)`), and renders them live via `onSnapshot`. The whole feature now lives inside the **Feedback** cloud's pane.
 
+**Session teardown is a correctness requirement, not tidiness.** Every `onAuthStateChanged` callback starts by calling the stored `unsubscribeFeedback()` and emptying the list, *before* branching on the user. An earlier version kept neither, and hiding the section with `display:none` was the only thing concealing the previous user's comments. That produced three real defects: a snapshot arriving after sign-out re-rendered a signed-out user's comments into the page; the rows survived logout in the DOM; and signing in as a second account left both listeners writing to the same container, so account A's comments could appear while logged in as B. When touching this file, keep all of these:
+
+- Store the `onSnapshot` return value and call it on every auth change.
+- Clear the list on every auth change, including sign-in.
+- `renderFeedback` re-checks `auth.currentUser.uid` against the uid the query was built for, so a late delivery is dropped rather than displayed.
+- The submit handler is bound **once at module level**, not inside `onAuthStateChanged` — binding it per auth change stacked a duplicate handler on every sign-in. It re-checks `auth.currentUser` and refuses when signed out.
+- Rows are built with `document.createElement` + `textContent`. Feedback text is user input; the old `innerHTML` interpolation was an XSS vector. DOMPurify is loaded in the page but not used — `textContent` makes it unnecessary here.
+
+Client-side checks only protect the UI. Actual enforcement belongs in Firestore security rules, which are not in this repo.
+
 ### Dead / standalone code — do not assume these are wired in
 - **[firebase.js](firebase.js) (repo root)** uses npm-style bundler imports (`from "firebase/app"`) and is **not referenced by the deployed site**. It is effectively unused.
 - **[server.js](server.js)** is a standalone Express app (cookie-parser + express-rate-limit on port 3000), **not part of the Firebase Hosting deployment**. Treat it as an experimental/local-only piece.
