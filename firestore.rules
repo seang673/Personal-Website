@@ -1,0 +1,52 @@
+rules_version = '2';
+
+// Server-side enforcement for the feedback feature.
+//
+// The client in public/scripts/feedbackFunctions.js already filters to the
+// signed-in user, but that is presentation only — anyone can call the Firestore
+// REST/SDK API directly. These rules are the actual access control; treat the
+// client checks as UX and this file as security.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /feedbacks/{feedbackId} {
+
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function ownsExisting() {
+        return isSignedIn() && resource.data.userId == request.auth.uid;
+      }
+
+      function ownsIncoming() {
+        return isSignedIn() && request.resource.data.userId == request.auth.uid;
+      }
+
+      // Covers both `get` and `list`. A query only succeeds if it is provably
+      // constrained to the caller's own documents — the client's
+      // where("userId","==",uid) satisfies that; an unfiltered read does not.
+      allow read: if ownsExisting();
+
+      // Writes must be stamped with the caller's own uid, carry exactly the
+      // three expected fields, and keep the body to a sane length so the
+      // collection cannot be used as free storage.
+      allow create: if ownsIncoming()
+                    && request.resource.data.keys().hasOnly(['feedback', 'timestamp', 'userId'])
+                    && request.resource.data.feedback is string
+                    && request.resource.data.feedback.size() > 0
+                    && request.resource.data.feedback.size() <= 2000;
+
+      // The app never edits feedback, so leave no edit path open at all.
+      allow update: if false;
+
+      allow delete: if ownsExisting();
+    }
+
+    // Anything not matched above is denied, so a new collection is never
+    // accidentally world-readable.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

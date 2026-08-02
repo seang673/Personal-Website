@@ -2,6 +2,7 @@
   "dependencies": {
     "cookie-parser": "^1.4.7",
     "dompurify": "^3.2.4",
+    "express": "^5.2.1",
     "express-rate-limit": "^7.5.0",
     "firebase": "^11.6.0"
   }
