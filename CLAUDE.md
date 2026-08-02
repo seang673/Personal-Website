@@ -24,8 +24,8 @@ There are no tests or linters configured.
 ### Three stacked layers
 [public/index.html](public/index.html) is, in order:
 
-1. **`.beach-backdrop`** — a fixed, `aria-hidden`, `pointer-events:none` div holding one inline `<svg>` scene at `z-index:-1`.
-2. **`.sky`** — the interactive layer: `.sky-stage` holding five `<button class="sky-cloud">` elements, plus the cursive `.sand-signoff`.
+1. **`.beach-backdrop`** — a fixed, `aria-hidden`, `pointer-events:none` div holding one inline `<svg>` scene at `z-index:0`.
+2. **`.sky`** — the interactive layer at `z-index:1`: `.sky-stage` holding five `<button class="sky-cloud">` elements, plus the cursive `.sand-signoff`. It is itself `pointer-events:none` so hovers reach the sand props behind it; the clouds opt back in.
 3. **`.section-overlay`** — a `hidden` fixed overlay with one `.section-panel` (`role="dialog"`) containing all five `.section-content` panes, only one of which is un-`hidden` at a time.
 
 `html, body { height:100%; overflow:hidden }` guarantees the page itself never scrolls. The **only** scrollable element on the site is `.section-scroll` inside an open panel.
@@ -62,7 +62,7 @@ One hand-authored SVG, `viewBox="0 0 1440 900"`, `preserveAspectRatio="xMidYMid 
 
 - **Palette lives in `:root` custom properties** at the top of styles.css — retune the scene from there rather than editing SVG fills. The palms are lit rather than silhouetted (`--palm-trunk`, `--palm-leaf`); `--gull` keeps the dark silhouette treatment for the distant birds.
 - **Layout contract:** horizon at `y=470`, sand edge at `y≈644`. Because `slice` crops the top and bottom on wide screens and the sides on narrow ones, keep beach props inside **y 640–860**, and inside **x 510–930** if they should survive a portrait phone. The bottom-right of the sand is deliberately left empty — that is where `.sand-signoff` sits.
-- **Repeated shapes use `<defs>` + `<use>`**: `#frond`, `#gull`, `#wisp`, `#crab`, `#seaweed`, `#lounger`, `#footprint`, the three shells, `#starfish`, and the three `#cloud-a/b/c` symbols the nav clouds reference.
+- **Repeated shapes use `<defs>` + `<use>`**: `#frond`, `#gull`, `#wisp`, `#crest-a/b/c`, `#crab`, `#seaweed`, `#lounger`, `#footprint`, the three shells, `#starfish`, and the three `#cloud-a/b/c` symbols the nav clouds reference.
 
 **Transform-origin rules — this is the fiddly part.** Each animated element picks the `transform-box` that makes its pivot unambiguous:
 

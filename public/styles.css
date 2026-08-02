@@ -6,9 +6,7 @@
     --sky-top:#3E5F86;  --sky-mid:#E0846F;  --sky-low:#FFC98B;
     --sun:#FFF1C9;      --sun-halo:#FFB765;
     --ocean-far:#4A7FA8; --ocean-near:#274F6E; --glint:#FFD9A0;
-    /* Keep --shimmer low: the highlight bands are drawn as dashed strokes and
-       read as road markings the moment they get opaque. */
-    --glint-hot:#FFF6DC; --shimmer:rgba(255,245,225,0.20);
+    --glint-hot:#FFF6DC;
     --sand-dry:#E9CFA3; --sand-wet:#D2AE7C;
     --sand-shadow:rgba(150,108,66,0.30);
 
@@ -28,7 +26,6 @@
     --ball-a:#EF5D50;    --ball-b:#FFF6E4;    --ball-c:#3E86B5;
 
     /* Frosted-glass surfaces */
-    --glass:rgba(255,255,255,0.22);
     --glass-strong:rgba(255,255,255,0.34);
     --glass-border:rgba(255,255,255,0.42);
     --glass-shadow:0 8px 32px rgba(16,42,60,0.22);
@@ -923,9 +920,9 @@ form {
 
     .sky-cloud[data-section="about"]     { left: 3%;  top: 4%; }
     .sky-cloud[data-section="portfolio"] { left: 53%; top: 4%; }
-    .sky-cloud[data-section="resume"]    { left: 3%;  top: 17%; }
+    .sky-cloud[data-section="feedback"]  { left: 3%;  top: 17%; }
     .sky-cloud[data-section="contacts"]  { left: 53%; top: 17%; }
-    .sky-cloud[data-section="feedback"]  { left: 28%; top: 30%; }
+    .sky-cloud[data-section="resume"]    { left: 28%; top: 30%; }
 
     /* Centred on the sand, below the umbrella and loungers. Two lines at most —
        four lines would climb back into the furniture. */
@@ -968,9 +965,9 @@ form {
        block above, which also matches at this width. */
     .sky-cloud[data-section="about"]     { left: 1%;    top: 5%; }
     .sky-cloud[data-section="portfolio"] { left: 20.5%; top: 5%; }
-    .sky-cloud[data-section="resume"]    { left: 40%;   top: 5%; }
+    .sky-cloud[data-section="feedback"]  { left: 40%;   top: 5%; }
     .sky-cloud[data-section="contacts"]  { left: 59.5%; top: 5%; }
-    .sky-cloud[data-section="feedback"]  { left: 79%;   top: 5%; }
+    .sky-cloud[data-section="resume"]    { left: 79%;   top: 5%; }
 
     .cloud-label { font-size: clamp(0.7rem, 1.6vw, 1rem); }
 
