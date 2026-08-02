@@ -2,8 +2,9 @@
 **This is a personal/professional website about me.** It is created with HTML and CSS programming, and currently displays the following components:
   - A personal description
   - A project portfolio
-  - My up-to-date resume
+  - My downloadable, up-to-date resume
   - Contact Information
+  - Feedback/Communication Section
 
 ## Current Status
 - This is a website that is hosted using Firebase hosting
