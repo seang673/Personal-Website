@@ -15,6 +15,7 @@
     --palm-trunk:#8A5A33;  --palm-trunk-dark:#6B4425;
     --palm-leaf:#2FA05C;   --palm-leaf-dark:#1F7A45;
     --gull:#2B3E4D;
+    --boat:#1F3A4D;
 
     /* Beach props */
     --shell:#FBEEDC;     --shell-2:#F3D9C4;  --shell-shadow:#D9B694;
@@ -238,6 +239,36 @@ body.is-zooming .beach-backdrop { transform: scale(1.12); }
 .gull-3 .gull-wing { animation-duration: 4.6s; }  /* coasting */
 .gull-4 .gull-wing { animation-duration: 1.2s; }
 .gull-5 .gull-wing { animation-duration: 5.2s; }  /* coasting */
+
+/* Boats drift slowly across the distant water. translateX is
+   origin-independent, same reasoning as the gull glide, so it stays safe
+   under the nested fill-box rock below. Durations are long and linear for a
+   slow, peaceful crossing rather than anything that reads as urgent. */
+@keyframes boat-drift {
+    from { transform: translateX(-120px); }
+    to   { transform: translateX(1560px); }
+}
+
+.boat { animation: boat-drift 150s linear infinite; }
+.boat-1 { animation-duration: 130s; animation-delay: -20s; }
+.boat-2 { animation-duration: 165s; animation-delay: -70s; }
+.boat-3 { animation-duration: 145s; animation-delay: -110s; }
+
+/* Gentle rock on the swell, nested so it never fights the drift's
+   translateX. fill-box keeps the pivot on the boat's own hull. */
+.boat-rock {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: boat-rock 4.6s ease-in-out infinite alternate;
+}
+
+@keyframes boat-rock {
+    from { transform: translateY(0)     rotate(-2deg); }
+    to   { transform: translateY(-1.6px) rotate(2deg); }
+}
+
+.boat-2 .boat-rock { animation-duration: 5.3s; animation-delay: -1.4s; }
+.boat-3 .boat-rock { animation-duration: 4.1s; animation-delay: -2.6s; }
 
 /* Seaweed sways from its own base; the pivot is set inline per clump. */
 .seaweed {
@@ -1006,7 +1037,8 @@ form {
     .prop-small,
     .glint-3,
     .swell-6,
-    .gull-4 {
+    .gull-4,
+    .boat-1 {
         display: none;
     }
 
@@ -1091,7 +1123,7 @@ form {
 @media (prefers-reduced-motion: reduce) {
     .frond, .swell, .foam, .cloud, .sun-glow,
     .gull, .gull-wing, .crab, .seaweed, .glint,
-    .cloud-bob, .prop {
+    .cloud-bob, .prop, .boat, .boat-rock {
         animation: none !important;
     }
 

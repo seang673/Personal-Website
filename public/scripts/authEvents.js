@@ -16,7 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     feedbackSection.style.display = "none";
 
-    const originalAuthDisplay = authSection.style.display;
     const originalContainerJustify = centerContainer.style.justifyContent;
 
     //Handle registration form
@@ -43,10 +42,9 @@ document.addEventListener("DOMContentLoaded", () => {
           const user = await loginUser(email, password);
           alert(`Login successful! Welcome back, ${user.email}`);
 
-          //Hide authentication and show logout button
-          authSection.style.display = "none";
-          logoutButton.style.display = "block";
-          feedbackSection.style.display= "block";
+          // authSection/feedbackSection/logoutButton visibility is driven by
+          // feedbackFunctions.js's onAuthStateChanged listener, not here — that
+          // keeps a single source of truth for "are we actually signed in".
           centerContainer.style.justifyContent = "center"; //Keeps logout button and feedback section centered
         } catch (error) {
           console.error("Login error:", error.message);
@@ -60,10 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
             await window.auth.signOut();
             alert("Logged out successfully");
 
-            //displays register and login forms again
-            authSection.style.display = originalAuthDisplay;
-            logoutButton.style.display="none";
-            feedbackSection.style.display = "none";
+            // authSection/feedbackSection/logoutButton visibility is driven by
+            // feedbackFunctions.js's onAuthStateChanged listener, not here.
             centerContainer.style.justifyContent = originalContainerJustify;
         } catch(error){
           console.error("Logout error:", error.message);
