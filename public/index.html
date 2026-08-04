@@ -100,6 +100,11 @@
 
       <path id="gull" d="M-18,0 C-12,-8 -6,-9 0,-2 C6,-9 12,-8 18,0 C11,-4 5,-3 0,3 C-5,-3 -11,-4 -18,0 Z"/>
 
+      <!-- Small sailboat silhouette: hull as one subpath, single triangular
+           sail as the other, so it reads clearly even scaled down to a
+           distant speck. -->
+      <path id="boat" d="M-13,0 L13,0 L9,5 C3,6.4 -3,6.4 -9,5 Z M0,-17 L0,-1 L12,-1 Z"/>
+
       <path id="wisp" d="M10,26 C-6,26 -8,10 8,8 C10,-8 34,-14 44,-2 C54,-16 82,-12 84,4 C102,2 106,20 92,26 Z"/>
 
       <!-- Wave crests: thin ribbons authored at y=0 and wider than the viewBox,
@@ -205,6 +210,19 @@
     <g class="sun-reflection" transform="translate(-215 0)">
       <ellipse cx="790" cy="530" rx="145" ry="82" fill="url(#reflectGlow)"/>
     </g>
+
+    <!-- ---- Distant sailboats ----
+         Kept near the horizon rather than close to shore, so they read as far
+         out on the water; scale grows slightly with y the same way the props
+         imply depth elsewhere in the scene. Each boat splits into the same
+         two-transform pattern as the gulls: the outer .boat drifts on
+         translateX only (safe under any transform-box), while the nested
+         .boat-rock does the gentle bob/rock on its own fill-box pivot so the
+         two never fight over `transform`. Drawn before the swells so a
+         cresting wave can pass in front of a boat, not behind it. -->
+    <g transform="translate(0 498)"><g class="boat boat-1"><g class="boat-rock"><use href="#boat" transform="translate(250 0) scale(0.6)"  fill="var(--boat)" opacity="0.55"/></g></g></g>
+    <g transform="translate(0 512)"><g class="boat boat-2"><g class="boat-rock"><use href="#boat" transform="translate(700 0) scale(0.8)"  fill="var(--boat)" opacity="0.65"/></g></g></g>
+    <g transform="translate(0 525)"><g class="boat boat-3"><g class="boat-rock"><use href="#boat" transform="translate(1150 0) scale(0.95)" fill="var(--boat)" opacity="0.72"/></g></g></g>
 
     <!-- ---- Swells rolling toward the shore ----
          Each crest is authored at y=0 and placed by the <use>; the CSS drives

@@ -12,12 +12,23 @@ There is **no build step, no bundler, and no test/lint tooling** — `package.js
 
 ## Commands
 
-- **Deploy (Firebase Hosting):** `firebase deploy --only hosting` (or just push to `main` — CI deploys automatically).
-- **Serve locally:** `firebase serve` or `firebase emulators:start` (serves `public/`). Any static file server pointed at `public/` also works.
+- **Serve locally:** `firebase serve` or `firebase emulators:start` (serves `public/`). Any static file server pointed at `public/` also works — there is no build step, so the files are the site.
+- **Deploy hosting:** `firebase deploy --only hosting` (merging to `main` also deploys automatically).
+- **Deploy Firestore rules:** `firebase deploy --only firestore:rules` — **separate from hosting and never run by CI.** Merging a change to `firestore.rules` does *not* apply it; this command does.
 - **Install deps:** `npm install` (only needed for `server.js`; the deployed site loads Firebase from CDN, not from `node_modules`).
-- **Run the Express server:** `node server.js` (listens on port 3000 — see caveat below).
+- **Run the Express server:** `node server.js` (port 3000 — see caveat below).
+- **Audit deps:** `npm audit`. Currently clean; `node_modules` is gitignored *and* untracked — do not re-add it.
 
-There are no tests or linters configured.
+There are no tests, linters, or `scripts` in `package.json`.
+
+### `main` is protected — you cannot push to it
+A GitHub ruleset blocks direct pushes, force-pushes, and deletion of `main`, and requires the `preview` status check. Work goes: branch → push → `gh pr create` → wait for the Firebase preview check → `gh pr merge`. Zero approvals are required, so you can merge your own PR. Repo admins can bypass, but don't — the guardrail exists because every merge to `main` deploys to production.
+
+### Testing
+Nothing is committed, but the app is testable end-to-end and has been verified this way:
+
+- Serve `public/` with any static server, then drive it with `playwright-core` pointed at an installed Chrome (`executablePath`). Assert on real geometry (`getBoundingClientRect`) and computed styles rather than screenshots — several layout and animation bugs here were invisible in stills but obvious in the numbers.
+- **To test auth without touching the live Firebase project**, intercept `**/firebasejs/**` with `page.route` and fulfil it with stub ES modules exporting `getAuth`, `onAuthStateChanged`, `onSnapshot`, etc. This works because the scripts read `window.createUserWithEmailAndPassword` / `signInWithEmailAndPassword` **at call time** — you can drive login/logout deterministically and record whether listeners were unsubscribed. Never create real accounts in `personal-website-de16c` to test.
 
 ## Architecture
 
@@ -61,7 +72,14 @@ Feedback docs live in the Firestore `feedbacks` collection with `{ feedback, tim
 - The submit handler is bound **once at module level**, not inside `onAuthStateChanged` — binding it per auth change stacked a duplicate handler on every sign-in. It re-checks `auth.currentUser` and refuses when signed out.
 - Rows are built with `document.createElement` + `textContent`. Feedback text is user input; the old `innerHTML` interpolation was an XSS vector. DOMPurify is loaded in the page but not used — `textContent` makes it unnecessary here.
 
-Client-side checks only protect the UI. Actual enforcement belongs in Firestore security rules, which are not in this repo.
+The form is also made **inert** when signed out (`setControlsEnabled`), not merely hidden — the input and submit button are disabled and the input is cleared.
+
+### Firestore security rules
+`firestore.rules` is the **actual** access control; everything in `feedbackFunctions.js` is UX. It grants read/create/delete on `feedbacks` only to the owner (`resource.data.userId == request.auth.uid`), constrains `create` with a `hasOnly` shape check and a 2000-char bound, denies `update` outright, and ends with a deny-all `match /{document=**}` so a new collection is never accidentally world-readable.
+
+`firestore.indexes.json` holds the composite index (`userId` ASC + `timestamp` DESC) the listener's query requires — without it `onSnapshot` fails with `FAILED_PRECONDITION`.
+
+Both are registered under the `firestore` key in `firebase.json`. **Changing them has no effect until `firebase deploy --only firestore:rules` runs.** That is deliberately not in CI: the `FIREBASE_SERVICE_ACCOUNT_*` secret was provisioned for Hosting and may lack Firestore admin.
 
 ### Dead / standalone code — do not assume these are wired in
 - **[firebase.js](firebase.js) (repo root)** uses npm-style bundler imports (`from "firebase/app"`) and is **not referenced by the deployed site**. It is effectively unused.
@@ -107,15 +125,16 @@ All styles are in a single [public/styles.css](public/styles.css). Some feedback
 
 ## Deployment
 
-Two GitHub Actions workflows both trigger on push to `main`:
-- [firebase-hosting-merge.yml](.github/workflows/firebase-hosting-merge.yml) — deploys to Firebase Hosting (project `personal-website-de16c`).
-- [static.yml](.github/workflows/static.yml) — deploys the repo to GitHub Pages.
+Two workflows, both deploying to Firebase Hosting (project `personal-website-de16c`):
+- [firebase-hosting-merge.yml](.github/workflows/firebase-hosting-merge.yml) — push to `main` → live channel.
+- [firebase-hosting-pull-request.yml](.github/workflows/firebase-hosting-pull-request.yml) — PRs → preview channel. Its `if:` guard skips fork PRs so the service-account secret is never exposed to them; because `preview` is a required check, **fork PRs will be unmergeable** until that check is waived.
 
-A third workflow deploys Firebase preview channels on pull requests.
+A `static.yml` GitHub Pages workflow used to exist and was removed: it published the *entire repository* (`path: '.'` — `server.js`, `package.json`, all of `node_modules`) and never pointed at `public/`. Don't reintroduce it.
+
+Both workflows pin the third-party `FirebaseExtended/action-hosting-deploy` to a commit SHA rather than `@v0`, because it receives the service-account secret. Keep it pinned.
 
 ## Notes
 
-- Firebase config (including the web API key) is committed in both index.html and firebase.js. This is expected for Firebase web apps — the key is a public client identifier, and access is controlled by Firestore/Auth security rules (not present in this repo).
-- The README lists security features (DOMPurify sanitization, CORS/CSRF, rate limiting). Verify before relying on any of these: DOMPurify is loaded via CDN in index.html but is not currently invoked in the scripts, and the rate limiter lives only in the non-deployed `server.js`.
+- Firebase config (including the web API key) is committed in both index.html and firebase.js. This is expected for Firebase web apps — the key is a public client identifier, and access is controlled by the Firestore/Auth rules described above.
 - A `<noscript>` block in index.html falls back to a plain stacked document, since without JS the cloud navigation cannot open anything.
-- The README still describes the old vertical-scroll layout with a nav bar; it has not been updated for the cloud navigation.
+- **The README's "Security & Networking Features" list is largely inaccurate — do not treat it as a description of the deployed site.** Specifically: DOMPurify is loaded via CDN but never invoked (XSS is handled by building rows with `textContent` instead); the rate limiter, cookie-parser and CORS config live only in `server.js`, which is **not deployed**; and DNS/IP/HTTPS are Firebase Hosting defaults, not features of this code. The README also still describes the old vertical-scroll layout and has not been updated for the cloud navigation.

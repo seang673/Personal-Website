@@ -9,6 +9,8 @@ const feedbackSection = document.getElementById("feedbackSection");
 const feedbackContainer = document.getElementById("feedbackContainer");
 const feedbackInput = document.getElementById("feedbackInput");
 const submitButton = document.getElementById("submitFeedback");
+const authSection = document.getElementById("authSection");
+const logoutButton = document.getElementById("logoutButton");
 
 if (!feedbackSection || !feedbackContainer || !feedbackInput || !submitButton) {
     console.error("feedbackFunctions: feedback DOM is missing; the feature is disabled.");
@@ -126,6 +128,12 @@ if (submitButton) {
     });
 }
 
+// This is the single source of truth for authSection/feedbackSection
+// visibility. authEvents.js used to toggle authSection itself on login/logout
+// clicks, but that only ran on an explicit button press — a session Firebase
+// silently restored on page load (no click involved) left the login form
+// showing at the same time as that account's real feedback. Driving both
+// sections off the actual auth state here means they can never disagree.
 onAuthStateChanged(auth, (user) => {
     // Always drop the previous session's listener and rendered rows first, so
     // no state can survive across a sign-out or an account switch.
@@ -134,11 +142,15 @@ onAuthStateChanged(auth, (user) => {
 
     if (!user) {
         if (feedbackSection) feedbackSection.style.display = "none";
+        if (logoutButton) logoutButton.style.display = "none";
+        if (authSection) authSection.style.display = "flex";
         setControlsEnabled(false);
         return;
     }
 
     if (feedbackSection) feedbackSection.style.display = "block";
+    if (logoutButton) logoutButton.style.display = "block";
+    if (authSection) authSection.style.display = "none";
     setControlsEnabled(true);
 
     const feedbackQuery = query(
