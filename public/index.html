@@ -73,6 +73,14 @@
         <stop offset="100%" stop-color="var(--ocean-near)"/>
       </linearGradient>
 
+      <!-- Glossy navy hull: a light sheen near the sheerline settling into a
+           dark, saturated navy at the waterline. -->
+      <linearGradient id="hullGloss" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="var(--boat-hull-light)"/>
+        <stop offset="30%"  stop-color="var(--boat-hull)"/>
+        <stop offset="100%" stop-color="var(--boat-hull-dark)"/>
+      </linearGradient>
+
       <!-- The sun's reflection: a soft glow patch, not a hard beam. -->
       <radialGradient id="reflectGlow" cx="0.5" cy="0.5" r="0.5">
         <stop offset="0%"   stop-color="var(--glint-hot)" stop-opacity="0.5"/>
@@ -100,10 +108,27 @@
 
       <path id="gull" d="M-18,0 C-12,-8 -6,-9 0,-2 C6,-9 12,-8 18,0 C11,-4 5,-3 0,3 C-5,-3 -11,-4 -18,0 Z"/>
 
-      <!-- Small sailboat silhouette: hull as one subpath, single triangular
-           sail as the other, so it reads clearly even scaled down to a
-           distant speck. -->
-      <path id="boat" d="M-13,0 L13,0 L9,5 C3,6.4 -3,6.4 -9,5 Z M0,-17 L0,-1 L12,-1 Z"/>
+      <!-- Modern cabin cruiser, bow to the right (the direction .boat drifts).
+           Waterline/deck sits at local y=0 so the wrapping <g translate(x y)>
+           in the ocean sets each boat's depth directly. Built from named-fill
+           parts rather than a single inherited fill, the same convention
+           #lounger uses, since a two-tone hull/cabin needs more than one
+           colour. -->
+      <g id="cabin-cruiser">
+        <path d="M-58,15 L-58,-4 L36,-8 Q56,-9 68,-2 Q60,7 34,12 Q-10,17 -58,15 Z" fill="url(#hullGloss)"/>
+        <path d="M-58,-4 L36,-8 Q54,-9 66,-3" fill="none" stroke="var(--boat-trim)" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M-12,-4 L-12,-26 L18,-30 L34,-8 Z" fill="var(--boat-deck)"/>
+        <path d="M14,-27 L30,-9 L25,-8 L10,-25 Z" fill="var(--boat-window)"/>
+        <path d="M2,-26 L2,-38 M2,-34 L14,-34 L14,-30" fill="none" stroke="var(--boat-trim)" stroke-width="1.8" stroke-linecap="round"/>
+      </g>
+
+      <!-- Trailing wake: two overlapping chevrons fading out astern. Kept
+           outside .boat-rock so it stays level on the water while the hull
+           bobs above it. -->
+      <g id="boat-wake">
+        <path d="M-60,4 Q-80,-3 -102,4 Q-80,10 -60,4 Z" fill="var(--boat-wake)"/>
+        <path d="M-74,4 Q-98,-5 -126,4 Q-98,12 -74,4 Z" fill="var(--boat-wake)" opacity="0.55"/>
+      </g>
 
       <path id="wisp" d="M10,26 C-6,26 -8,10 8,8 C10,-8 34,-14 44,-2 C54,-16 82,-12 84,4 C102,2 106,20 92,26 Z"/>
 
@@ -211,18 +236,35 @@
       <ellipse cx="790" cy="530" rx="145" ry="82" fill="url(#reflectGlow)"/>
     </g>
 
-    <!-- ---- Distant sailboats ----
-         Kept near the horizon rather than close to shore, so they read as far
-         out on the water; scale grows slightly with y the same way the props
-         imply depth elsewhere in the scene. Each boat splits into the same
-         two-transform pattern as the gulls: the outer .boat drifts on
-         translateX only (safe under any transform-box), while the nested
-         .boat-rock does the gentle bob/rock on its own fill-box pivot so the
-         two never fight over `transform`. Drawn before the swells so a
-         cresting wave can pass in front of a boat, not behind it. -->
-    <g transform="translate(0 498)"><g class="boat boat-1"><g class="boat-rock"><use href="#boat" transform="translate(250 0) scale(0.6)"  fill="var(--boat)" opacity="0.55"/></g></g></g>
-    <g transform="translate(0 512)"><g class="boat boat-2"><g class="boat-rock"><use href="#boat" transform="translate(700 0) scale(0.8)"  fill="var(--boat)" opacity="0.65"/></g></g></g>
-    <g transform="translate(0 525)"><g class="boat boat-3"><g class="boat-rock"><use href="#boat" transform="translate(1150 0) scale(0.95)" fill="var(--boat)" opacity="0.72"/></g></g></g>
+    <!-- ---- Cabin cruisers ----
+         Kept mid-to-far in the water, clear of the shoreline surf, so bigger
+         and more detailed doesn't mean crowding the beach. Each boat splits
+         into the same two-transform pattern as the gulls: the outer plain
+         <g translate(x y)> is a static SVG attribute (so it can't be clobbered
+         by the CSS-animated transform on its child), .boat drifts on
+         translateX only, and the nested .boat-rock does the gentle bob/tilt on
+         its own fill-box pivot so the two never fight over `transform`. The
+         wake sits outside .boat-rock so it stays level on the water while the
+         hull rocks above it. Drawn before the swells so a cresting wave can
+         pass in front of a boat, not behind it. -->
+    <g transform="translate(280 528)">
+      <g class="boat boat-1" opacity="0.9">
+        <use class="boat-wake" href="#boat-wake" transform="scale(0.85)"/>
+        <g class="boat-rock"><use href="#cabin-cruiser" transform="scale(0.85)"/></g>
+      </g>
+    </g>
+    <g transform="translate(760 546)">
+      <g class="boat boat-2" opacity="0.96">
+        <use class="boat-wake" href="#boat-wake"/>
+        <g class="boat-rock"><use href="#cabin-cruiser"/></g>
+      </g>
+    </g>
+    <g transform="translate(1200 562)">
+      <g class="boat boat-3" opacity="1">
+        <use class="boat-wake" href="#boat-wake" transform="scale(0.95)"/>
+        <g class="boat-rock"><use href="#cabin-cruiser" transform="scale(0.92)"/></g>
+      </g>
+    </g>
 
     <!-- ---- Swells rolling toward the shore ----
          Each crest is authored at y=0 and placed by the <use>; the CSS drives
