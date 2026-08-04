@@ -15,7 +15,14 @@
     --palm-trunk:#8A5A33;  --palm-trunk-dark:#6B4425;
     --palm-leaf:#2FA05C;   --palm-leaf-dark:#1F7A45;
     --gull:#2B3E4D;
-    --boat:#1F3A4D;
+
+    /* Cabin cruisers: glossy navy hull (gradient, light-to-dark), white
+       cabin, dark windshield glass, light trim/antenna. */
+    --boat-hull-dark:#122A3E;  --boat-hull:#1C4A6E;  --boat-hull-light:#4F86AC;
+    --boat-deck:#F6F8FA;
+    --boat-window:#17262F;
+    --boat-trim:#D7DEE2;
+    --boat-wake:rgba(255,255,255,0.55);
 
     /* Beach props */
     --shell:#FBEEDC;     --shell-2:#F3D9C4;  --shell-shadow:#D9B694;
@@ -240,22 +247,24 @@ body.is-zooming .beach-backdrop { transform: scale(1.12); }
 .gull-4 .gull-wing { animation-duration: 1.2s; }
 .gull-5 .gull-wing { animation-duration: 5.2s; }  /* coasting */
 
-/* Boats drift slowly across the distant water. translateX is
+/* Boats cruise slowly across the mid-to-far water. translateX is
    origin-independent, same reasoning as the gull glide, so it stays safe
-   under the nested fill-box rock below. Durations are long and linear for a
-   slow, peaceful crossing rather than anything that reads as urgent. */
+   under the nested fill-box rock below. Durations are long and linear for an
+   unhurried, leisurely crossing rather than anything that reads as urgent. */
 @keyframes boat-drift {
     from { transform: translateX(-120px); }
     to   { transform: translateX(1560px); }
 }
 
-.boat { animation: boat-drift 150s linear infinite; }
-.boat-1 { animation-duration: 130s; animation-delay: -20s; }
-.boat-2 { animation-duration: 165s; animation-delay: -70s; }
-.boat-3 { animation-duration: 145s; animation-delay: -110s; }
+.boat { animation: boat-drift 170s linear infinite; }
+.boat-1 { animation-duration: 150s; animation-delay: -20s; }
+.boat-2 { animation-duration: 190s; animation-delay: -80s; }
+.boat-3 { animation-duration: 165s; animation-delay: -130s; }
 
 /* Gentle rock on the swell, nested so it never fights the drift's
-   translateX. fill-box keeps the pivot on the boat's own hull. */
+   translateX. fill-box keeps the pivot on the boat's own hull. A cabin
+   cruiser sits steadier than the old sailboat, so rotation is smaller, but
+   it's bigger on screen now so the vertical bob is a touch more visible. */
 .boat-rock {
     transform-box: fill-box;
     transform-origin: 50% 100%;
@@ -263,12 +272,27 @@ body.is-zooming .beach-backdrop { transform: scale(1.12); }
 }
 
 @keyframes boat-rock {
-    from { transform: translateY(0)     rotate(-2deg); }
-    to   { transform: translateY(-1.6px) rotate(2deg); }
+    from { transform: translateY(0)     rotate(-1.5deg); }
+    to   { transform: translateY(-3px)  rotate(1.5deg); }
 }
 
 .boat-2 .boat-rock { animation-duration: 5.3s; animation-delay: -1.4s; }
 .boat-3 .boat-rock { animation-duration: 4.1s; animation-delay: -2.6s; }
+
+/* Wake trails astern, shimmering gently rather than sitting static. */
+.boat-wake {
+    transform-box: fill-box;
+    transform-origin: 0% 50%;
+    animation: boat-wake-shimmer 3.4s ease-in-out infinite alternate;
+}
+
+@keyframes boat-wake-shimmer {
+    from { opacity: 0.35; }
+    to   { opacity: 0.65; }
+}
+
+.boat-2 .boat-wake { animation-duration: 4.1s; animation-delay: -1.2s; }
+.boat-3 .boat-wake { animation-duration: 2.9s; animation-delay: -2.1s; }
 
 /* Seaweed sways from its own base; the pivot is set inline per clump. */
 .seaweed {
@@ -1123,9 +1147,13 @@ form {
 @media (prefers-reduced-motion: reduce) {
     .frond, .swell, .foam, .cloud, .sun-glow,
     .gull, .gull-wing, .crab, .seaweed, .glint,
-    .cloud-bob, .prop, .boat, .boat-rock {
+    .cloud-bob, .prop, .boat, .boat-rock, .boat-wake {
         animation: none !important;
     }
+
+    /* boat-wake-shimmer has no natural mid-point resting opacity without the
+       animation driving it. */
+    .boat-wake { opacity: 0.5; }
 
     /* Swells are mid-roll by default; without the animation they need a
        resting state or they'd all stack at full transparency. */
